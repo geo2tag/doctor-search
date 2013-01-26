@@ -1,4 +1,1 @@
-doctor-search
-=============
-
-Doctor search geo2tag service
+Geo Doctor Search
