@@ -14,7 +14,6 @@ import android.location.Location;
 import android.util.Log;
 
 public class GDSUtil {
-	
 	private GDSUtil() {}
 	
 	public static final boolean DEBUG = true;
@@ -53,9 +52,7 @@ public class GDSUtil {
 			Date date = dateUtcFormat.parse(time);
 			return date.toString();
 		} catch (ParseException e) {
-			if (DEBUG) {
-				Log.v(LOG, "can't parse UTC time " + time);
-			}
+            GDSUtil.log("can't parse UTC time " + time);
 			return time;
 		}
 	}
@@ -88,4 +85,9 @@ public class GDSUtil {
 		return strBuffer.toString();
 	}
 
+    public static void log(String message) {
+        if (DEBUG) {
+            Log.v(LOG, message);
+        }
+    }
 }
