@@ -158,6 +158,13 @@ public class LoginActivity extends Activity {
         //		IGDSSettings.SERVER_URL, "");
         String authToken = "";
 
+        if (login.length()==0 || password.length()==0){
+        	GDSUtil.log("login or password are empty");
+            Toast.makeText(this, "Credentials can not be empty!", Toast.LENGTH_LONG).show();
+            return;
+        }
+        
+        
         JSONObject JSONResponse = null;
         for (int i = 0; i < 1; i++) {
             JSONResponse = new JsonLoginRequest(login, password, serverUrl).doRequest();

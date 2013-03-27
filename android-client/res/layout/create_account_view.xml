@@ -20,6 +20,19 @@
         <TextView 
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:text="@string/email" 
+            android:singleLine="true"/>
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/edit_reg_email"
+            android:singleLine="true"
+            android:inputType="text" />
+        
+        
+        <TextView 
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:text="@string/password" 
             android:singleLine="true"/>
         <EditText

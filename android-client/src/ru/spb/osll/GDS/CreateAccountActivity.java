@@ -58,8 +58,10 @@ public class CreateAccountActivity extends Activity {
 	private static final int SETTINGS_ID = Menu.FIRST;
 	
 	private EditText m_loginEdit;
+	private EditText m_emailEdit;
 	private EditText m_passwordEdit;
 	private EditText m_rePasswordEdit;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +72,7 @@ public class CreateAccountActivity extends Activity {
 		setTitle("Create a new account");
 		
 		m_loginEdit = (EditText) findViewById(R.id.edit_reg_login);
+		m_emailEdit = (EditText) findViewById(R.id.edit_reg_email);
 		m_passwordEdit = (EditText) findViewById(R.id.edit_reg_password);
 		m_rePasswordEdit = (EditText) findViewById(R.id.edit_reg_re_password);
 
@@ -126,6 +129,7 @@ public class CreateAccountActivity extends Activity {
 	private void register() {
 		boolean success = false;
 		String login = m_loginEdit.getText().toString();
+		String email = m_emailEdit.getText().toString();
 		String password = m_passwordEdit.getText().toString();
 		String re_password = m_rePasswordEdit.getText().toString();
 		String serverUrl = new Settings(this).getServerUrl();
@@ -134,6 +138,10 @@ public class CreateAccountActivity extends Activity {
 		// Check fields
 		if (login.length() == 0) {
 			Toast.makeText(this, "Login can't be empty", Toast.LENGTH_LONG).show();
+			return;
+		}
+		if (email.length() == 0) {
+			Toast.makeText(this, "Email can't be empty", Toast.LENGTH_LONG).show();
 			return;
 		}
 		if (password.length() == 0) {
@@ -148,7 +156,7 @@ public class CreateAccountActivity extends Activity {
 		// Add user
 		JSONObject JSONResponse = null;
 		for(int i = 0; i < 1; i++){
-			JSONResponse = new JsonAddUserRequest(login, password, login, serverUrl).doRequest();
+			JSONResponse = new JsonAddUserRequest(login, password, email, serverUrl).doRequest();
 			if (JSONResponse != null) 
 				break;
 		}
