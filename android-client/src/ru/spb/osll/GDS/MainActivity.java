@@ -206,13 +206,15 @@ public class MainActivity extends TabActivity {
 				JSONObject JSONResponse = null;
 				String description = m_settings.getDescription();
 				for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
-					JSONResponse = new JsonApplyMarkRequest(m_authToken, "Events", "SOS", "",
+					Log.v(GDSUtil.LOG, "atempt to send SOS tag");
+					JSONResponse = new JsonApplyMarkRequest(m_authToken, GDSUtil.EVENTS_CHANNEL, "SOS", "",
 							description, location.getLatitude(), location.getLongitude(), 0,
 							GDSUtil.getUtcTime(new Date()), serverUrl).doRequest();
 					if (JSONResponse != null) 
 						break;
 				}
 				if (JSONResponse != null) {
+					Log.v(GDSUtil.LOG, "atempt to send SOS tag was success, errno = "+JsonBaseResponse.parseErrno(JSONResponse));
 					int errno = JsonBaseResponse.parseErrno(JSONResponse);
 					if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
 						if (GDSUtil.DEBUG) {
@@ -221,6 +223,8 @@ public class MainActivity extends TabActivity {
 						//broadcastMarkSent(location);
 					} else {
 						//handleError(errno);
+						m_progress.dismiss();
+						Toast.makeText(MainActivity.this, "Failed to send location", Toast.LENGTH_LONG).show();
 						return;
 					}
 				} else {
@@ -228,6 +232,8 @@ public class MainActivity extends TabActivity {
 						Log.v(TrackingManager.LOG, "response failed");
 					}
 					//broadcastError("Failed to send location");
+					m_progress.dismiss();
+					Toast.makeText(MainActivity.this, "Failed to send location", Toast.LENGTH_LONG).show();
 					return;
 				}
 				m_handler.sendEmptyMessage(0);
@@ -251,6 +257,7 @@ public class MainActivity extends TabActivity {
 		@Override
 		public void onMarkSent(String lonlat) {
 			runOnUiThread(new Runnable() {
+				
 				@Override
 				public void run() {
 					m_statusView.setText("Tracking started");

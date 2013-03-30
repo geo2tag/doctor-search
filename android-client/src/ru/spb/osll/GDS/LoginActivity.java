@@ -41,9 +41,11 @@ import ru.spb.osll.json.JsonBase;
 import ru.spb.osll.json.JsonBaseResponse;
 import ru.spb.osll.json.JsonLoginRequest;
 import ru.spb.osll.json.IRequest.IResponse;
+import ru.spb.osll.json.JsonSubscribeRequest;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -191,25 +193,94 @@ public class LoginActivity extends Activity {
         // TODO: clean up the mess below
         JSONResponse = null;
         for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
-            JSONResponse = new JsonApplyChannelRequest(authToken, "Events",
+            JSONResponse = new JsonApplyChannelRequest(authToken, GDSUtil.EVENTS_CHANNEL,
                     "Channel with Events", "", 40000, serverUrl).doRequest();
             if (JSONResponse != null)
                 break;
         }
         if (JSONResponse != null) {
             int errno = JsonBaseResponse.parseErrno(JSONResponse);
-            if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
-                GDSUtil.log("Channel Events added successfully");
-            } else if (errno == IResponse.geo2tagError.CHANNEL_ALREADY_EXIST_ERROR.ordinal()) {
-                GDSUtil.log("Channel Events already exists");
+            if (errno == IResponse.geo2tagError.SUCCESS.ordinal() || 
+            		errno == IResponse.geo2tagError.CHANNEL_ALREADY_EXIST_ERROR.ordinal()) {
+                GDSUtil.log("Channel Events added successfully or already exists, subscribing");
+                
+                for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
+                	JSONResponse = new JsonSubscribeRequest(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl).doRequest();
+                	if (JSONResponse != null)
+                		break;
+                }
+        		
+        		
+        		if (JSONResponse != null) {
+        			errno = JsonBaseResponse.parseErrno(JSONResponse);
+        			if (errno == IResponse.geo2tagError.SUCCESS.ordinal() ||
+        					errno == IResponse.geo2tagError.CHANNEL_ALREADY_SUBSCRIBED_ERROR.ordinal() ) {
+        				if (GDSUtil.DEBUG) {
+        					Log.v(GDSUtil.LOG, "Subscribed to Events channel");
+        				}
+        			} else {
+        				handleError(errno);
+        				return;
+        			}
+        		} 
+                
             } else {
                 handleError(errno);
                 return;
             }
+            
+            
         } else {
             GDSUtil.log("response failed");
         }
 
+        
+        // Adding tracking channel if it is not exist
+        JSONResponse = null;
+        for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
+            JSONResponse = new JsonApplyChannelRequest(authToken, login,
+                    "Channel for tracking", "", 40000, serverUrl).doRequest();
+            if (JSONResponse != null)
+                break;
+        }
+        if (JSONResponse != null) {
+            int errno = JsonBaseResponse.parseErrno(JSONResponse);
+            if (errno == IResponse.geo2tagError.SUCCESS.ordinal() || 
+            		errno == IResponse.geo2tagError.CHANNEL_ALREADY_EXIST_ERROR.ordinal()) {
+                GDSUtil.log("Channel " + login + " added successfully or already exists, subscribing");
+                
+                for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
+                	JSONResponse = new JsonSubscribeRequest(authToken, login, serverUrl).doRequest();
+                	if (JSONResponse != null)
+                		break;
+                }
+        		
+        		
+        		if (JSONResponse != null) {
+        			errno = JsonBaseResponse.parseErrno(JSONResponse);
+        			if (errno == IResponse.geo2tagError.SUCCESS.ordinal() ||
+        					errno == IResponse.geo2tagError.CHANNEL_ALREADY_SUBSCRIBED_ERROR.ordinal() ) {
+        				if (GDSUtil.DEBUG) {
+        					Log.v(GDSUtil.LOG, "Subscribed to " + login + " channel");
+        				}
+        			} else {
+        				handleError(errno);
+        				return;
+        			}
+        		} 
+                
+            } else {
+                handleError(errno);
+                return;
+            }
+            
+            
+        } else {
+            GDSUtil.log("response failed");
+        }
+        
+        
+        
         settings.setLogin(m_loginEdit.getText().toString());
         settings.setPassword(m_passwordEdit.getText().toString());
         settings.setAuthToken(authToken);

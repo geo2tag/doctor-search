@@ -212,7 +212,7 @@ public class CreateAccountActivity extends Activity {
 		// Add Events channel
 		JSONResponse = null;
 		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
-			JSONResponse = new JsonApplyChannelRequest(authToken, "Events",
+			JSONResponse = new JsonApplyChannelRequest(authToken, GDSUtil.EVENTS_CHANNEL,
 					"Channel with Events", "", 40000, serverUrl).doRequest();
 			if (JSONResponse != null) 
 				break;
@@ -295,7 +295,7 @@ public class CreateAccountActivity extends Activity {
 		// Subscribe to Events channel (for doctors)
 		JSONResponse = null;
 		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
-			JSONResponse = new JsonSubscribeRequest(authToken, "Events", serverUrl).doRequest();
+			JSONResponse = new JsonSubscribeRequest(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl).doRequest();
 			if (JSONResponse != null) 
 				break;
 		}

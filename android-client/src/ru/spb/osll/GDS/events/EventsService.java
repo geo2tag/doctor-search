@@ -156,7 +156,7 @@ public class EventsService extends Service {
 				response.parseJson(JSONResponse);
 				List<Channel> channels = response.getChannelsData();
 				for (Channel channel : channels) {
-					if (channel.getName().compareTo("Events") == 0) {	
+					if (channel.getName().compareTo(GDSUtil.EVENTS_CHANNEL) == 0) {	
 						if (GDSUtil.NOT_RECEIVE_OWN_EVENTS) {
 							Iterator<Mark> iter = channel.getMarks().iterator();
 							String login = m_settings.getLogin();
