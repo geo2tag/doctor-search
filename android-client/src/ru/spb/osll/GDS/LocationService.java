@@ -44,6 +44,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 public class LocationService extends Service {
 	
@@ -115,7 +116,10 @@ public class LocationService extends Service {
 
 		if (locationManager != null) {
 			if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+				
 				provider = LocationManager.GPS_PROVIDER;
+			}else{
+				Log.d(LOG, "GPS is disabled!!!!!!");
 			}
 			location = locationManager.getLastKnownLocation(provider);
 		}

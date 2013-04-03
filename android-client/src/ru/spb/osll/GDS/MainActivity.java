@@ -183,7 +183,7 @@ public class MainActivity extends TabActivity {
     }
 	
 	private void sos() {
-		m_progress = ProgressDialog.show(this, "SOS", "Sending SOS", true, false);
+		m_progress = ProgressDialog.show(this, "SOS", "Sending SOS", true, true);
 		Thread thread = new Thread() {
 			@Override
 			public void run() {
@@ -196,7 +196,10 @@ public class MainActivity extends TabActivity {
 					if (GDSUtil.DEBUG) {
 						Log.v(GDSUtil.LOG, "can't get location, trying again...");
 					}
-					SystemClock.sleep(2 * 1000);
+					
+					Log.v(GDSUtil.LOG, "sleep started");
+					SystemClock.sleep(2000);
+					Log.v(GDSUtil.LOG, "sleep ended");
 					location = LocationService.getLocation(MainActivity.this);
 				}
 				if (GDSUtil.DEBUG) {
