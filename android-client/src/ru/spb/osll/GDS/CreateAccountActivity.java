@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import ru.spb.osll.GDS.exception.ExceptionHandler;
 import ru.spb.osll.GDS.preferences.Settings;
 import ru.spb.osll.GDS.preferences.SettingsActivity;
+import ru.spb.osll.json.Errno;
 import ru.spb.osll.json.JsonAddUserRequest;
 import ru.spb.osll.json.JsonApplyChannelRequest;
 import ru.spb.osll.json.JsonBase;
@@ -161,8 +162,10 @@ public class CreateAccountActivity extends Activity {
 				break;
 		}
 		if (JSONResponse != null) {
-			int errno = JsonBaseResponse.parseErrno(JSONResponse);
-			if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+			JsonBaseResponse response = new JsonBaseResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "user added successfully");
 				}
@@ -188,8 +191,10 @@ public class CreateAccountActivity extends Activity {
 				break;
 		}
 		if (JSONResponse != null) {
-			int errno = JsonBaseResponse.parseErrno(JSONResponse);
-			if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+			JsonBaseResponse response = new JsonBaseResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "user logged in successfully");
 				}
@@ -218,13 +223,14 @@ public class CreateAccountActivity extends Activity {
 				break;
 		}
 		if (JSONResponse != null) {
-			int errno = JsonBaseResponse.parseErrno(JSONResponse);
-			if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+			JsonBaseResponse response = new JsonBaseResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "Channel Events added successfully");
 				}
-			} else if (errno == IResponse.geo2tagError.
-					            CHANNEL_ALREADY_EXIST_ERROR.ordinal()) {
+			} else if (errno == Errno.CHANNEL_ALREADY_EXIST_ERROR) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "Channel Events already exists");
 				}
@@ -248,8 +254,10 @@ public class CreateAccountActivity extends Activity {
 				break;
 		}
 		if (JSONResponse != null) {
-			int errno = JsonBaseResponse.parseErrno(JSONResponse);
-			if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+			JsonBaseResponse response = new JsonBaseResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "Channel for tracking added successfully");
 				}
@@ -274,8 +282,10 @@ public class CreateAccountActivity extends Activity {
 				break;
 		}
 		if (JSONResponse != null) {
-			int errno = JsonBaseResponse.parseErrno(JSONResponse);
-			if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+			JsonBaseResponse response = new JsonBaseResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "Subscribed to tracking channel");
 				}
@@ -300,8 +310,10 @@ public class CreateAccountActivity extends Activity {
 				break;
 		}
 		if (JSONResponse != null) {
-			int errno = JsonBaseResponse.parseErrno(JSONResponse);
-			if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+			JsonBaseResponse response = new JsonBaseResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "Subscribed to Events channel");
 				}
@@ -333,14 +345,14 @@ public class CreateAccountActivity extends Activity {
 			}
 			Toast.makeText(this, "Server error (corrupted response)",
 					Toast.LENGTH_LONG).show();
-		} else if (errno >= IResponse.geo2tagError.values().length) {
+		} else if ( Errno.getErrorByCode(errno) == null) {
 			if (GDSUtil.DEBUG) {
 				Log.v(GDSUtil.LOG, "unknown error");
 			}
 			Toast.makeText(this, "Unknown server error",
 					Toast.LENGTH_LONG).show();
 		} else if (errno > 0) {
-			String error = IResponse.geo2tagError.values()[errno].name();
+			String error = Errno.getErrorByCode(errno);
 			if (GDSUtil.DEBUG) {
 				Log.v(GDSUtil.LOG, "error: " + error);
 			}

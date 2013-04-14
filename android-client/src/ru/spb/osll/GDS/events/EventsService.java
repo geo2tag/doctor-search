@@ -15,6 +15,8 @@ import ru.spb.osll.GDS.R;
 import ru.spb.osll.GDS.exception.ExceptionHandler;
 import ru.spb.osll.GDS.preferences.Settings;
 import ru.spb.osll.json.IRequest.IResponse;
+import ru.spb.osll.json.Errno;
+import ru.spb.osll.json.JsonBaseResponse;
 import ru.spb.osll.json.JsonFilterCircleRequest;
 import ru.spb.osll.json.JsonFilterResponse;
 import ru.spb.osll.objects.Channel;
@@ -147,13 +149,14 @@ public class EventsService extends Service {
 				break;
 		}
 		if (JSONResponse != null) {
-			int errno = JsonFilterResponse.parseErrno(JSONResponse);
-			if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+			JsonFilterResponse response = new JsonFilterResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(EventsManager.LOG, "Events received successfully");
 				}
-				JsonFilterResponse response = new JsonFilterResponse();
-				response.parseJson(JSONResponse);
+
 				List<Channel> channels = response.getChannelsData();
 				for (Channel channel : channels) {
 					if (channel.getName().compareTo(GDSUtil.EVENTS_CHANNEL) == 0) {	
@@ -235,12 +238,12 @@ public class EventsService extends Service {
 			if (GDSUtil.DEBUG) {
 				Log.v(EventsManager.LOG, "bad response received");
 			}
-		} else if (errno >= IResponse.geo2tagError.values().length) {
+		} else if (Errno.getErrorByCode(errno) == null) {
 			if (GDSUtil.DEBUG) {
 				Log.v(EventsManager.LOG, "unknown error");
 			}
 		} else if (errno > 0) {
-			String error = IResponse.geo2tagError.values()[errno].name();
+			String error = Errno.getErrorByCode(errno);
 			if (GDSUtil.DEBUG) {
 				Log.v(EventsManager.LOG, "error: " + error);
 			}

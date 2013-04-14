@@ -40,6 +40,7 @@ import ru.spb.osll.GDS.preferences.Settings;
 import ru.spb.osll.GDS.preferences.SettingsActivity;
 import ru.spb.osll.GDS.tracking.TrackingManager;
 import ru.spb.osll.GDS.tracking.TrackingReceiver;
+import ru.spb.osll.json.Errno;
 import ru.spb.osll.json.JsonApplyMarkRequest;
 import ru.spb.osll.json.JsonBaseResponse;
 import ru.spb.osll.json.IRequest.IResponse;
@@ -217,9 +218,11 @@ public class MainActivity extends TabActivity {
 						break;
 				}
 				if (JSONResponse != null) {
-					Log.v(GDSUtil.LOG, "atempt to send SOS tag was success, errno = "+JsonBaseResponse.parseErrno(JSONResponse));
-					int errno = JsonBaseResponse.parseErrno(JSONResponse);
-					if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+        			JsonBaseResponse response = new JsonBaseResponse();
+        			response.parseJson(JSONResponse);
+        			int errno = response.getErrno();
+					Log.v(GDSUtil.LOG, "atempt to send SOS tag was success, errno = "+errno);
+        			if (errno == Errno.SUCCESS ){
 						if (GDSUtil.DEBUG) {
 							Log.v(GDSUtil.LOG, "Mark sent successfully");
 						}

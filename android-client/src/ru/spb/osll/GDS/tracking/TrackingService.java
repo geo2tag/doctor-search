@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import ru.spb.osll.GDS.GDSUtil;
 import ru.spb.osll.GDS.exception.ExceptionHandler;
 import ru.spb.osll.GDS.preferences.Settings;
+import ru.spb.osll.json.Errno;
 import ru.spb.osll.json.JsonApplyMarkRequest;
 import ru.spb.osll.json.JsonBaseResponse;
 import ru.spb.osll.json.IRequest.IResponse;
@@ -171,8 +172,10 @@ public class TrackingService extends Service {
 				break;
 		}
 		if (JSONResponse != null) {
-			int errno = JsonBaseResponse.parseErrno(JSONResponse);
-			if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+			JsonBaseResponse response = new JsonBaseResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(TrackingManager.LOG, "Mark sent successfully");
 				}
@@ -195,12 +198,12 @@ public class TrackingService extends Service {
 			if (GDSUtil.DEBUG) {
 				Log.v(TrackingManager.LOG, "bad response received");
 			}
-		} else if (errno >= IResponse.geo2tagError.values().length) {
+		} else if (Errno.getErrorByCode(errno) == null) {
 			if (GDSUtil.DEBUG) {
 				Log.v(TrackingManager.LOG, "unknown error");
 			}
 		} else if (errno > 0) {
-			String error = IResponse.geo2tagError.values()[errno].name();
+			String error = Errno.getErrorByCode(errno) ;
 			if (GDSUtil.DEBUG) {
 				Log.v(TrackingManager.LOG, "error: " + error);
 			}

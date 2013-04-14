@@ -36,11 +36,13 @@ import org.json.JSONObject;
 import ru.spb.osll.GDS.exception.ExceptionHandler;
 import ru.spb.osll.GDS.preferences.Settings;
 import ru.spb.osll.GDS.preferences.SettingsActivity;
+import ru.spb.osll.json.Errno;
 import ru.spb.osll.json.JsonApplyChannelRequest;
 import ru.spb.osll.json.JsonBase;
 import ru.spb.osll.json.JsonBaseResponse;
 import ru.spb.osll.json.JsonLoginRequest;
 import ru.spb.osll.json.IRequest.IResponse;
+import ru.spb.osll.json.JsonLoginResponse;
 import ru.spb.osll.json.JsonSubscribeRequest;
 import android.app.Activity;
 import android.content.Intent;
@@ -174,15 +176,16 @@ public class LoginActivity extends Activity {
                 break;
         }
         if (JSONResponse != null) {
-            int errno = JsonBaseResponse.parseErrno(JSONResponse);
-            if (errno == IResponse.geo2tagError.SUCCESS.ordinal()) {
+			JsonLoginResponse response = new JsonLoginResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS) {
                 GDSUtil.log("user logged in successfully");
             } else {
                 handleError(errno);
                 return;
             }
-
-            authToken = JsonBase.getString(JSONResponse, IResponse.AUTH_TOKEN);
+			authToken = response.getAuthString();
         } else {
             GDSUtil.log("response failed");
             Toast.makeText(this, "Connection error", Toast.LENGTH_LONG).show();
@@ -199,9 +202,10 @@ public class LoginActivity extends Activity {
                 break;
         }
         if (JSONResponse != null) {
-            int errno = JsonBaseResponse.parseErrno(JSONResponse);
-            if (errno == IResponse.geo2tagError.SUCCESS.ordinal() || 
-            		errno == IResponse.geo2tagError.CHANNEL_ALREADY_EXIST_ERROR.ordinal()) {
+			JsonBaseResponse response = new JsonBaseResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS || errno == Errno.CHANNEL_ALREADY_EXIST_ERROR) {
                 GDSUtil.log("Channel Events added successfully or already exists, subscribing");
                 
                 for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
@@ -212,9 +216,10 @@ public class LoginActivity extends Activity {
         		
         		
         		if (JSONResponse != null) {
-        			errno = JsonBaseResponse.parseErrno(JSONResponse);
-        			if (errno == IResponse.geo2tagError.SUCCESS.ordinal() ||
-        					errno == IResponse.geo2tagError.CHANNEL_ALREADY_SUBSCRIBED_ERROR.ordinal() ) {
+        			JsonBaseResponse subscribeResponse = new JsonBaseResponse();
+        			subscribeResponse.parseJson(JSONResponse);
+        			int subscribeErrno = subscribeResponse.getErrno();
+        			if (subscribeErrno == Errno.SUCCESS || subscribeErrno == Errno.CHANNEL_ALREADY_SUBSCRIBED_ERROR){
         				if (GDSUtil.DEBUG) {
         					Log.v(GDSUtil.LOG, "Subscribed to Events channel");
         				}
@@ -244,9 +249,10 @@ public class LoginActivity extends Activity {
                 break;
         }
         if (JSONResponse != null) {
-            int errno = JsonBaseResponse.parseErrno(JSONResponse);
-            if (errno == IResponse.geo2tagError.SUCCESS.ordinal() || 
-            		errno == IResponse.geo2tagError.CHANNEL_ALREADY_EXIST_ERROR.ordinal()) {
+			JsonBaseResponse response = new JsonBaseResponse();
+			response.parseJson(JSONResponse);
+			int errno = response.getErrno();
+			if (errno == Errno.SUCCESS || errno == Errno.CHANNEL_ALREADY_EXIST_ERROR) {
                 GDSUtil.log("Channel " + login + " added successfully or already exists, subscribing");
                 
                 for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
@@ -257,9 +263,10 @@ public class LoginActivity extends Activity {
         		
         		
         		if (JSONResponse != null) {
-        			errno = JsonBaseResponse.parseErrno(JSONResponse);
-        			if (errno == IResponse.geo2tagError.SUCCESS.ordinal() ||
-        					errno == IResponse.geo2tagError.CHANNEL_ALREADY_SUBSCRIBED_ERROR.ordinal() ) {
+        			JsonBaseResponse subscribeResponse = new JsonBaseResponse();
+        			subscribeResponse.parseJson(JSONResponse);
+        			int subscribeErrno = subscribeResponse.getErrno();
+        			if (subscribeErrno == Errno.SUCCESS || subscribeErrno == Errno.CHANNEL_ALREADY_SUBSCRIBED_ERROR){
         				if (GDSUtil.DEBUG) {
         					Log.v(GDSUtil.LOG, "Subscribed to " + login + " channel");
         				}
@@ -301,11 +308,11 @@ public class LoginActivity extends Activity {
         if (errno < 0) {
             GDSUtil.log("bad response received");
             Toast.makeText(this, "Server error (corrupted response)", Toast.LENGTH_LONG).show();
-        } else if (errno >= IResponse.geo2tagError.values().length) {
+        } else if (Errno.getErrorByCode(errno) == null) {
             GDSUtil.log("unknown error");
             Toast.makeText(this, "Unknown server error", Toast.LENGTH_LONG).show();
         } else if (errno > 0) {
-            String error = IResponse.geo2tagError.values()[errno].name();
+            String error = Errno.getErrorByCode(errno);
             GDSUtil.log("error: " + error);
             Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
         }
