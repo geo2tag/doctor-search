@@ -36,101 +36,102 @@
 package ru.spb.osll.GDS.preferences;
 
 import ru.spb.osll.GDS.R;
-import ru.spb.osll.GDS.exception.ExceptionHandler;
-import android.app.Activity;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
 
-public class SettingsActivity extends Activity {
+
+public class SettingsActivity extends PreferenceActivity {
+
 	
-	private Settings m_settings;
-	private EditText m_descriptionEdit;
-	private EditText m_serverUrlEdit;
-	private EditText m_radiusEdit;
-	private EditText m_trackingPeriodEdit;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.settings);
-		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
-	
-		setTitle("GeoDoctorSearch settings");
+		//setContentView(R.layout.settings);
 		
-		m_settings = new Settings(this);
-		m_descriptionEdit = (EditText) findViewById(R.id.edit_description);
-		m_serverUrlEdit = (EditText) findViewById(R.id.edit_server_address);
-		m_radiusEdit = (EditText) findViewById(R.id.edit_radius);
-		m_trackingPeriodEdit = (EditText) findViewById(R.id.edit_tracking_period);
+		PreferenceManager prefMgr = getPreferenceManager();
+        prefMgr.setSharedPreferencesName(Settings.GDS_SETTINGS);
+        
+		addPreferencesFromResource(R.xml.preferences); 
 		
-		initializeFields();
-		
-		Button btnOk = (Button) findViewById(R.id.button_ok);
-		btnOk.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				savePreferences();
-				runOnUiThread(m_saveToast);
-				finish();
-			}
-		});
-		
-		Button btnCancel = (Button) findViewById(R.id.button_cancel);
-		btnCancel.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				finish();
-			}
-		});
-	}
-
-	private void initializeFields(){
-		m_descriptionEdit.setText(m_settings.getDescription());
-		m_serverUrlEdit.setText(m_settings.getServerUrl());
-		m_radiusEdit.setText(String.valueOf(m_settings.getRadius()));
-		m_trackingPeriodEdit.setText(
-				String.valueOf(m_settings.getTrackingPeriod()));
 		
 	}
-	
-	private void savePreferences(){
-		m_settings.setDescription(m_descriptionEdit.getText().toString().trim());
-		m_settings.setServerUrl(m_serverUrlEdit.getText().toString().trim());
-		m_settings.setRadius(Integer.parseInt(m_radiusEdit.getText().toString()));
-		m_settings.setTrackingPeriod(
-				Integer.parseInt(m_trackingPeriodEdit.getText().toString()));
-	}
-	
-	private Runnable m_saveToast = new Runnable() {
-		@Override
-		public void run() {
-			//Toast.makeText(SettingsActivity.this, TrackerUtil.MESS_SETTINGS_SAVED, Toast.LENGTH_SHORT).show();
-		}
-	};
-
-	private void initCheckBox(String key, int id){
-		SharedPreferences settings = new Settings(this).getPreferences();
-		((CheckBox) findViewById(id)).setChecked(settings.getBoolean(key, false));
-	}
-
-	private void saveCheckBox(String key, int id, Editor prefEditor){
-		boolean status = ((CheckBox) findViewById(id)).isChecked();
-		prefEditor.putBoolean(key, status);
-	}
-
-	String[] args = {"1", "2", "3", "4", "5", "10", "20", "30", "40", "50", "60"};
-	private int getIdx(int val){
-		for (int i = 0; i < args.length; i++){
-			if (args[i].equals(Integer.toString(val)))
-				return i;
-		}
-		return 0;
-	}
+		
+//		Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+//	
+//		setTitle("GeoDoctorSearch settings");
+//		
+//		m_settings = new Settings(this);
+//		m_descriptionEdit = (EditText) findViewById(R.id.edit_description);
+//		m_serverUrlEdit = (EditText) findViewById(R.id.edit_server_address);
+//		m_radiusEdit = (EditText) findViewById(R.id.edit_radius);
+//		m_trackingPeriodEdit = (EditText) findViewById(R.id.edit_tracking_period);
+//		
+//		initializeFields();
+//		
+//		Button btnOk = (Button) findViewById(R.id.button_ok);
+//		btnOk.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				savePreferences();
+//				runOnUiThread(m_saveToast);
+//				finish();
+//			}
+//		});
+//		
+//		Button btnCancel = (Button) findViewById(R.id.button_cancel);
+//		btnCancel.setOnClickListener(new View.OnClickListener() {
+//			@Override
+//			public void onClick(View v) {
+//				finish();
+//			}
+//		});
+//	}
+//
+//	private void initializeFields(){
+//		m_descriptionEdit.setText(m_settings.getDescription());
+//		m_serverUrlEdit.setText(m_settings.getServerUrl());
+//		m_radiusEdit.setText(String.valueOf(m_settings.getRadius()));
+//		m_trackingPeriodEdit.setText(
+//				String.valueOf(m_settings.getTrackingPeriod()));
+//		
+//	}
+//	
+//	private void savePreferences(){
+//		m_settings.setDescription(m_descriptionEdit.getText().toString().trim());
+//		m_settings.setServerUrl(m_serverUrlEdit.getText().toString().trim());
+//		m_settings.setRadius(Integer.parseInt(m_radiusEdit.getText().toString()));
+//		m_settings.setTrackingPeriod(
+//				Integer.parseInt(m_trackingPeriodEdit.getText().toString()));
+//	}
+//	
+//	private Runnable m_saveToast = new Runnable() {
+//		@Override
+//		public void run() {
+//			//Toast.makeText(SettingsActivity.this, TrackerUtil.MESS_SETTINGS_SAVED, Toast.LENGTH_SHORT).show();
+//		}
+//	};
+//
+//	private void initCheckBox(String key, int id){
+//		SharedPreferences settings = new Settings(this).getPreferences();
+//		((CheckBox) findViewById(id)).setChecked(settings.getBoolean(key, false));
+//	}
+//
+//	private void saveCheckBox(String key, int id, Editor prefEditor){
+//		boolean status = ((CheckBox) findViewById(id)).isChecked();
+//		prefEditor.putBoolean(key, status);
+//	}
+//
+//	String[] args = {"1", "2", "3", "4", "5", "10", "20", "30", "40", "50", "60"};
+//	private int getIdx(int val){
+//		for (int i = 0; i < args.length; i++){
+//			if (args[i].equals(Integer.toString(val)))
+//				return i;
+//		}
+//		return 0;
+//	}
 	
 	//private int m_timeTick;
 	

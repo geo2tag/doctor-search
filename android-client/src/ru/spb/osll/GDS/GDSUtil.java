@@ -34,6 +34,7 @@ public class GDSUtil {
 	private static final String DATE_FORMAT = "dd MM yyyy HH:mm:ss.SSS";
 	private static final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 	private static final DateFormat dateUtcFormat;
+	public static final boolean WELCOME_ACTIVITY_DISABLED = false;
 	static {
 		dateUtcFormat = new SimpleDateFormat(DATE_FORMAT);
 		dateUtcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));

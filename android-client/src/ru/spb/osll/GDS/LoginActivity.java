@@ -56,7 +56,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class LoginActivity extends Activity {
+public class LoginActivity extends BasicActivity {
 
     public static final int SETTINGS_ID = Menu.FIRST;
 
@@ -70,10 +70,7 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.login_view);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
 
-        Settings settings = new Settings(this);
-        if (settings.isSettingsEmpty()) {
-            settings.setDefaultSettings();
-        }
+
 
         m_loginEdit = (EditText) findViewById(R.id.edit_login);
         m_passwordEdit = (EditText) findViewById(R.id.edit_password);
@@ -304,19 +301,7 @@ public class LoginActivity extends Activity {
         startActivity(i);
     }
 
-    private void handleError(int errno) {
-        if (errno < 0) {
-            GDSUtil.log("bad response received");
-            Toast.makeText(this, "Server error (corrupted response)", Toast.LENGTH_LONG).show();
-        } else if (Errno.getErrorByCode(errno) == null) {
-            GDSUtil.log("unknown error");
-            Toast.makeText(this, "Unknown server error", Toast.LENGTH_LONG).show();
-        } else if (errno > 0) {
-            String error = Errno.getErrorByCode(errno);
-            GDSUtil.log("error: " + error);
-            Toast.makeText(this, "Error: " + error, Toast.LENGTH_LONG).show();
-        }
-    }
+
 
     private void createAccount() {
         GDSUtil.log("creating account");

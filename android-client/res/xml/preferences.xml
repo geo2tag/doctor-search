@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+   
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <PreferenceCategory
+        android:title="General Settings">
+
+    
+		<EditTextPreference
+			android:key="description"
+			android:title="@string/description_title"
+			android:summary="@string/description_summary"
+			android:dialogTitle="@string/description_dialog_title" />
+        
+		<EditTextPreference
+			android:key="server_url"
+			android:title="@string/server_url_title"
+			android:summary="@string/server_url_summary"
+			android:dialogTitle="@string/server_url_dialog_title" />     
+        
+	    <ListPreference
+	        android:key="radius"
+	        android:title="@string/radius_title"
+	        android:summary="@string/radius_summary"
+	        android:entries="@array/radius_entries"
+	        android:defaultValue="3"
+	        android:entryValues="@array/radius_values"/> 
+	        
+	    <ListPreference
+	        android:key="tracking_period"
+	        android:title="@string/tracking_period_title"
+	        android:summary="@string/tracking_period_summary"
+	        android:entries="@array/tracking_period_entries"
+	        android:defaultValue="1"
+	        android:entryValues="@array/tracking_period_values"/> 
+	    
+	    <CheckBoxPreference
+	        android:key="welcome_activity_disabled"
+	        android:title="@string/welcome_activity_disabled_title"
+            android:summary="@string/welcome_activity_disabled_summary"/>
+
+	        
+	</PreferenceCategory>
+      
+</PreferenceScreen>

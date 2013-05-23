@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+	<TextView android:id="@+id/welcome_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:textSize="16sp"
+        android:paddingLeft="5sp"
+        android:paddingTop="5sp"
+        android:text="@string/welcome_activity_message"
+        android:gravity="left"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/welcome_activity_next" />
+   
+    
+    <Button
+        android:id="@+id/welcome_next"
+        android:layout_above="@+id/welcome_bottom_layout"
+        android:text="@string/welcome_activity_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:textSize="20sp" />
+
+    <RelativeLayout android:id="@+id/welcome_bottom_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" >
+
+	    <TextView android:id="@+id/welcome_check_message_text"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/cancel_welcome_message"
+	        android:textSize="15sp"
+	        android:layout_gravity="center_vertical"
+	        android:layout_toLeftOf="@+id/welcome_checkbox"
+	        android:layout_centerVertical="true" />
+	    
+	    <CheckBox android:id="@+id/welcome_checkbox"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+	        android:checked="false"
+	        android:layout_centerVertical="true" />
+        
+    </RelativeLayout>
+
+    
+
+</RelativeLayout>

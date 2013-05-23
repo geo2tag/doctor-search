@@ -3,6 +3,38 @@
 
     <string name="hello">Hello World!</string>
     <string name="app_name">GeoDoctorSearch</string>
+
+    <!-- WelcomeActivity -->
+    <string name="welcome_activity_message">
+        <![CDATA[
+		<html>
+		<head></head>
+		<body style="text-align:justify;">
+        This programm is an instrument for people to get fast medical help in 
+        case of sudden disease exacerbation. All users are divided in two groups - Patients (people who might need help) 
+        and Doctors (real doctors ready to help quickly). <br><br>Patients can send a SOS signal in case of emrgency. SOS signal will contain information 
+        about user name, send time and coordinates. <br><br>Doctors can determine nearby people who needs urgent medical 
+        aid using interactive map, where closests SOS signals are displayed. 
+        </body>
+		</html>
+		]]>
+        </string>
+    <string name="welcome_activity_next">Next</string>
+    <string name="cancel_welcome_message">Do not show this screen next time</string>
+    
+    <!-- Prefernces -->
+    <string name="description_title">Description</string>
+    <string name="description_summary">Set description</string>
+    <string name="description_dialog_title">Enter description</string>
+    <string name="server_url_title">Server URL</string>
+    <string name="server_url_summary">Set server URL</string>
+    <string name="server_url_dialog_title">Enter server URL</string>
+    <string name="radius_title">Radius</string>
+    <string name="radius_summary">Set radius(in kilometers)</string>
+    <string name="tracking_period_title">Tracking period</string>
+    <string name="tracking_period_summary">Set tracking period(in minutes)</string>
+    <string name="welcome_activity_disabled_title">Disable welcome screen</string>
+    <string name="welcome_activity_disabled_summary">Do not show welcome screen on startup</string>
     
     <!-- LoginActivity -->
     <string name="login">Login</string>
@@ -14,12 +46,12 @@
     <string name="remember_me">Remember me</string>
     <string name="menu_settings">Settings</string>
     <string name="register">Register</string>
-    
+
     <!-- MainActivity -->
     <string name="menu_sign_out">Sign out</string>
     <string name="map_tab_name">Events map</string>
     <string name="sos">SOS</string>
-    
+
     <!-- settings -->
     <string name="channel">Channel</string>
     <string name="key">Key</string>
@@ -29,11 +61,11 @@
     <string name="radius">Radius (km)</string>
     <string name="tracking_period">Tracking period (min)</string>
     <string name="uri">Uri</string>
-    
+
     <!-- CheckBox -->
     <string name="checkbox_hide_on_start">Hide tracker on start</string>
     <string name="checkbox_show_tick_toast">Show tick toast</string>
-    
+
     <!-- buttons -->
     <string name="btnOk">Ok</string>
     <string name="btnCancel">Cancel</string>
@@ -41,5 +73,7 @@
     <string name="btnStop">Stop Tracker</string>
     <string name="btnSettings">Settings</string>
     <string name="btnHide">Hide</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_welcome">WelcomeActivity</string>
 
 </resources>

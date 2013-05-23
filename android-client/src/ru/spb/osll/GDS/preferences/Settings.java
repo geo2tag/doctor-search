@@ -47,7 +47,7 @@ import android.util.Log;
 
 public class Settings {
 
-	private static final String GDS_SETTINGS = "gds_settings";
+	public static final String GDS_SETTINGS = "gds_settings";
 	private static final String SETTINGS_STATUS = "settings_status"; 
 	
 	/* From settings activity: */
@@ -61,6 +61,7 @@ public class Settings {
 	private static final String LOGIN = "login";
 	private static final String PASSWORD = "password";
 	private static final String REMEMBER = "remember";
+	private static final String WELCOME_ACTIVITY_DISABLED = "welcome_activity_disabled";
 	
 	private Context m_context;
 	
@@ -187,6 +188,16 @@ public class Settings {
 	
 	public static SharedPreferences getPreferences(Context c){
 		return new Settings(c).getPreferences();
+	}
+
+	public boolean getWelcomeActivityDisabled() {
+		SharedPreferences prefs = m_context.getSharedPreferences(GDS_SETTINGS, 0);
+	    return prefs.getBoolean(WELCOME_ACTIVITY_DISABLED, GDSUtil.WELCOME_ACTIVITY_DISABLED);
+	}
+	
+	public void setWelcomeActivityDisabled(boolean enabled){
+		SharedPreferences prefs = m_context.getSharedPreferences(GDS_SETTINGS, 0);
+	    prefs.edit().putBoolean(WELCOME_ACTIVITY_DISABLED, enabled).commit();
 	}
 			
 }
