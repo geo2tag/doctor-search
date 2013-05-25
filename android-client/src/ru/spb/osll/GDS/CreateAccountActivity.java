@@ -134,6 +134,7 @@ public class CreateAccountActivity extends BasicActivity {
 		String re_password = m_rePasswordEdit.getText().toString();
 		String serverUrl = new Settings(this).getServerUrl();
 		String authToken = "";
+		int errno = -1;
 		
 		// Check fields
 		if (login.length() == 0) {
@@ -163,7 +164,7 @@ public class CreateAccountActivity extends BasicActivity {
 		if (JSONResponse != null) {
 			JsonBaseResponse response = new JsonBaseResponse();
 			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
+			errno = response.getErrno();
 			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "user added successfully");
@@ -177,12 +178,12 @@ public class CreateAccountActivity extends BasicActivity {
 			if (GDSUtil.DEBUG) {
 				Log.v(GDSUtil.LOG, "response failed");
 			}
-			Toast.makeText(this, "Connection error",
-					Toast.LENGTH_LONG).show();
+			handleError(errno);
 			return;
 		}
 		
 		// Login
+		errno = -1;
 		JSONResponse = null;
 		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
 			JSONResponse = new JsonLoginRequest(login, password, serverUrl).doRequest();
@@ -192,7 +193,7 @@ public class CreateAccountActivity extends BasicActivity {
 		if (JSONResponse != null) {
 			JsonBaseResponse response = new JsonBaseResponse();
 			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
+			errno = response.getErrno();
 			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "user logged in successfully");
@@ -205,15 +206,12 @@ public class CreateAccountActivity extends BasicActivity {
 			authToken = JsonBase.getString(JSONResponse, IResponse.AUTH_TOKEN);
 
 		} else {
-			if (GDSUtil.DEBUG) {
-				Log.v(GDSUtil.LOG, "response failed");
-			}
-			Toast.makeText(this, "Connection error",
-					Toast.LENGTH_LONG).show();
+			handleError(errno);
 			return;
 		}
 		
 		// Add Events channel
+		errno = -1;
 		JSONResponse = null;
 		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
 			JSONResponse = new JsonApplyChannelRequest(authToken, GDSUtil.EVENTS_CHANNEL,
@@ -224,7 +222,7 @@ public class CreateAccountActivity extends BasicActivity {
 		if (JSONResponse != null) {
 			JsonBaseResponse response = new JsonBaseResponse();
 			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
+			errno = response.getErrno();
 			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "Channel Events added successfully");
@@ -239,12 +237,11 @@ public class CreateAccountActivity extends BasicActivity {
 				return;
 			}
 		} else {
-			if (GDSUtil.DEBUG) {
-				Log.v(GDSUtil.LOG, "response failed");
-			}
+			handleError(errno);
 		}
 		
 		// Add channel for tracking
+		errno = -1;
 		JSONResponse = null;
 		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
 			JSONResponse = new JsonApplyChannelRequest(authToken, login,
@@ -255,7 +252,7 @@ public class CreateAccountActivity extends BasicActivity {
 		if (JSONResponse != null) {
 			JsonBaseResponse response = new JsonBaseResponse();
 			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
+			errno = response.getErrno();
 			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "Channel for tracking added successfully");
@@ -265,15 +262,12 @@ public class CreateAccountActivity extends BasicActivity {
 				return;
 			}
 		} else {
-			if (GDSUtil.DEBUG) {
-				Log.v(GDSUtil.LOG, "response failed");
-			}
-			Toast.makeText(this, "Connection error",
-					Toast.LENGTH_LONG).show();
+			handleError(errno);
 			return;
 		}
 		
 		// Subscribe to tracking channel
+		errno = -1;
 		JSONResponse = null;
 		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
 			JSONResponse = new JsonSubscribeRequest(authToken, login, serverUrl).doRequest();
@@ -283,7 +277,7 @@ public class CreateAccountActivity extends BasicActivity {
 		if (JSONResponse != null) {
 			JsonBaseResponse response = new JsonBaseResponse();
 			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
+			errno = response.getErrno();
 			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "Subscribed to tracking channel");
@@ -293,15 +287,12 @@ public class CreateAccountActivity extends BasicActivity {
 				return;
 			}
 		} else {
-			if (GDSUtil.DEBUG) {
-				Log.v(GDSUtil.LOG, "response failed");
-			}
-			Toast.makeText(this, "Connection error",
-					Toast.LENGTH_LONG).show();
+			handleError(errno);
 			return;
 		}
 		
 		// Subscribe to Events channel (for doctors)
+		errno = -1;
 		JSONResponse = null;
 		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
 			JSONResponse = new JsonSubscribeRequest(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl).doRequest();
@@ -311,7 +302,7 @@ public class CreateAccountActivity extends BasicActivity {
 		if (JSONResponse != null) {
 			JsonBaseResponse response = new JsonBaseResponse();
 			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
+			errno = response.getErrno();
 			if (errno == Errno.SUCCESS) {
 				if (GDSUtil.DEBUG) {
 					Log.v(GDSUtil.LOG, "Subscribed to Events channel");
@@ -322,11 +313,7 @@ public class CreateAccountActivity extends BasicActivity {
 			}
 			success = true;
 		} else {
-			if (GDSUtil.DEBUG) {
-				Log.v(GDSUtil.LOG, "response failed");
-			}
-			Toast.makeText(this, "Connection error",
-					Toast.LENGTH_LONG).show();
+			handleError(errno);
 			return;
 		}
 

@@ -165,7 +165,7 @@ public class LoginActivity extends BasicActivity {
             return;
         }
         
-        
+        int errno = -1;
         JSONObject JSONResponse = null;
         for (int i = 0; i < 1; i++) {
             JSONResponse = new JsonLoginRequest(login, password, serverUrl).doRequest();
@@ -175,7 +175,7 @@ public class LoginActivity extends BasicActivity {
         if (JSONResponse != null) {
 			JsonLoginResponse response = new JsonLoginResponse();
 			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
+			errno = response.getErrno();
 			if (errno == Errno.SUCCESS) {
                 GDSUtil.log("user logged in successfully");
             } else {
@@ -184,8 +184,7 @@ public class LoginActivity extends BasicActivity {
             }
 			authToken = response.getAuthString();
         } else {
-            GDSUtil.log("response failed");
-            Toast.makeText(this, "Connection error", Toast.LENGTH_LONG).show();
+            handleError(errno);
             return;
         }
 
@@ -198,10 +197,11 @@ public class LoginActivity extends BasicActivity {
             if (JSONResponse != null)
                 break;
         }
+        errno = -1;
         if (JSONResponse != null) {
 			JsonBaseResponse response = new JsonBaseResponse();
 			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
+			errno = response.getErrno();
 			if (errno == Errno.SUCCESS || errno == Errno.CHANNEL_ALREADY_EXIST_ERROR) {
                 GDSUtil.log("Channel Events added successfully or already exists, subscribing");
                 
@@ -238,6 +238,7 @@ public class LoginActivity extends BasicActivity {
 
         
         // Adding tracking channel if it is not exist
+        errno = -1;
         JSONResponse = null;
         for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
             JSONResponse = new JsonApplyChannelRequest(authToken, login,
@@ -245,10 +246,12 @@ public class LoginActivity extends BasicActivity {
             if (JSONResponse != null)
                 break;
         }
+        
+        errno = -1;
         if (JSONResponse != null) {
 			JsonBaseResponse response = new JsonBaseResponse();
 			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
+			errno = response.getErrno();
 			if (errno == Errno.SUCCESS || errno == Errno.CHANNEL_ALREADY_EXIST_ERROR) {
                 GDSUtil.log("Channel " + login + " added successfully or already exists, subscribing");
                 
