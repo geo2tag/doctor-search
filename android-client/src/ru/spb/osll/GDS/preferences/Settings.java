@@ -167,22 +167,25 @@ public class Settings {
 	
 	public int getRadius() {
 		SharedPreferences prefs = m_context.getSharedPreferences(GDS_SETTINGS, 0);
-	    return prefs.getInt(RADIUS, GDSUtil.EVENTS_RADIUS);
+		String period = prefs.getString(RADIUS, String.valueOf(GDSUtil.EVENTS_RADIUS));
+	    return Integer.parseInt(period);
+
 	}
 	
 	public void setRadius(int radius) {
 		SharedPreferences prefs = m_context.getSharedPreferences(GDS_SETTINGS, 0);
-	    prefs.edit().putInt(RADIUS, radius).commit();
+	    prefs.edit().putString(RADIUS, String.valueOf(radius)).commit();
 	}
 	
 	public int getTrackingPeriod() {
 		SharedPreferences prefs = m_context.getSharedPreferences(GDS_SETTINGS, 0);
-	    return prefs.getInt(TRACKING_PERIOD, GDSUtil.TRACKING_INTERVAL);
+		String period = prefs.getString(TRACKING_PERIOD, String.valueOf(GDSUtil.TRACKING_INTERVAL));
+	    return Integer.parseInt(period);
 	}
 	
 	public void setTrackingPeriod(int trackingPeriod) {
 		SharedPreferences prefs = m_context.getSharedPreferences(GDS_SETTINGS, 0);
-	    prefs.edit().putInt(TRACKING_PERIOD, trackingPeriod).commit();
+	    prefs.edit().putString(TRACKING_PERIOD, String.valueOf(trackingPeriod)).commit();
 	}
 
 	

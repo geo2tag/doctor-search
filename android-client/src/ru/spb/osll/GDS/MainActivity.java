@@ -38,12 +38,14 @@ import org.json.JSONObject;
 import ru.spb.osll.GDS.exception.ExceptionHandler;
 import ru.spb.osll.GDS.preferences.Settings;
 import ru.spb.osll.GDS.preferences.SettingsActivity;
+import ru.spb.osll.GDS.tracking.RequestSenderWrapper;
 import ru.spb.osll.GDS.tracking.TrackingManager;
 import ru.spb.osll.GDS.tracking.TrackingReceiver;
 import ru.spb.osll.json.Errno;
 import ru.spb.osll.json.JsonApplyMarkRequest;
 import ru.spb.osll.json.JsonBaseResponse;
 import ru.spb.osll.json.IRequest.IResponse;
+import ru.spb.osll.json.RequestException;
 import android.app.ProgressDialog;
 import android.app.TabActivity;
 import android.content.Context;
@@ -207,8 +209,21 @@ public class MainActivity extends TabActivity {
 					Log.v(GDSUtil.LOG, "location determined! sending location...");
 				}
 				String serverUrl = m_settings.getServerUrl();
-				JSONObject JSONResponse = null;
 				String description = m_settings.getDescription();
+				
+				try {
+					RequestSenderWrapper.writeTag(m_authToken, m_channel,
+							location.getLatitude(), location.getLongitude(), serverUrl);
+					GDSUtil.log("SOS sent successfuly!");
+				}catch (RequestException e){
+					m_progress.dismiss();
+					Toast.makeText(MainActivity.this, "Failed to send location", Toast.LENGTH_LONG).show();
+					return;
+					
+				}
+				m_handler.sendEmptyMessage(0);
+				
+				/*JSONObject JSONResponse = null;
 				for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
 					Log.v(GDSUtil.LOG, "atempt to send SOS tag");
 					JSONResponse = new JsonApplyMarkRequest(m_authToken, GDSUtil.EVENTS_CHANNEL, "SOS", "",
@@ -242,7 +257,7 @@ public class MainActivity extends TabActivity {
 					Toast.makeText(MainActivity.this, "Failed to send location", Toast.LENGTH_LONG).show();
 					return;
 				}
-				m_handler.sendEmptyMessage(0);
+				m_handler.sendEmptyMessage(0);*/
 			}
 		};
 		thread.start();

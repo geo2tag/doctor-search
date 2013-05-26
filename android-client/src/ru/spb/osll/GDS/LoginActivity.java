@@ -31,23 +31,15 @@
 
 package ru.spb.osll.GDS;
 
-import org.json.JSONObject;
 
 import ru.spb.osll.GDS.exception.ExceptionHandler;
 import ru.spb.osll.GDS.preferences.Settings;
 import ru.spb.osll.GDS.preferences.SettingsActivity;
-import ru.spb.osll.json.Errno;
-import ru.spb.osll.json.JsonApplyChannelRequest;
-import ru.spb.osll.json.JsonBase;
-import ru.spb.osll.json.JsonBaseResponse;
-import ru.spb.osll.json.JsonLoginRequest;
-import ru.spb.osll.json.IRequest.IResponse;
-import ru.spb.osll.json.JsonLoginResponse;
-import ru.spb.osll.json.JsonSubscribeRequest;
-import android.app.Activity;
+import ru.spb.osll.GDS.tracking.RequestSenderWrapper;
+
+import ru.spb.osll.json.RequestException;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -165,148 +157,46 @@ public class LoginActivity extends BasicActivity {
             return;
         }
         
-        int errno = -1;
-        JSONObject JSONResponse = null;
-        for (int i = 0; i < 1; i++) {
-            JSONResponse = new JsonLoginRequest(login, password, serverUrl).doRequest();
-            if (JSONResponse != null)
-                break;
-        }
-        if (JSONResponse != null) {
-			JsonLoginResponse response = new JsonLoginResponse();
-			response.parseJson(JSONResponse);
-			errno = response.getErrno();
-			if (errno == Errno.SUCCESS) {
-                GDSUtil.log("user logged in successfully");
-            } else {
-                handleError(errno);
-                return;
-            }
-			authToken = response.getAuthString();
-        } else {
-            handleError(errno);
-            return;
-        }
+        
+        try{
+        	authToken = RequestSenderWrapper.login(login, password, serverUrl);
+        	
+        	RequestSenderWrapper.addChannel(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl);
+        	RequestSenderWrapper.subscribeChannel(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl);
+        	
+        	RequestSenderWrapper.addChannel(authToken, channel, serverUrl);
+        	RequestSenderWrapper.subscribeChannel(authToken, channel, serverUrl);
 
-        // Add Events channel
-        // TODO: clean up the mess below
-        JSONResponse = null;
-        for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
-            JSONResponse = new JsonApplyChannelRequest(authToken, GDSUtil.EVENTS_CHANNEL,
-                    "Channel with Events", "", 40000, serverUrl).doRequest();
-            if (JSONResponse != null)
-                break;
-        }
-        errno = -1;
-        if (JSONResponse != null) {
-			JsonBaseResponse response = new JsonBaseResponse();
-			response.parseJson(JSONResponse);
-			errno = response.getErrno();
-			if (errno == Errno.SUCCESS || errno == Errno.CHANNEL_ALREADY_EXIST_ERROR) {
-                GDSUtil.log("Channel Events added successfully or already exists, subscribing");
-                
-                for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
-                	JSONResponse = new JsonSubscribeRequest(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl).doRequest();
-                	if (JSONResponse != null)
-                		break;
-                }
-        		
-        		
-        		if (JSONResponse != null) {
-        			JsonBaseResponse subscribeResponse = new JsonBaseResponse();
-        			subscribeResponse.parseJson(JSONResponse);
-        			int subscribeErrno = subscribeResponse.getErrno();
-        			if (subscribeErrno == Errno.SUCCESS || subscribeErrno == Errno.CHANNEL_ALREADY_SUBSCRIBED_ERROR){
-        				if (GDSUtil.DEBUG) {
-        					Log.v(GDSUtil.LOG, "Subscribed to Events channel");
-        				}
-        			} else {
-        				handleError(errno);
-        				return;
-        			}
-        		} 
-                
-            } else {
-                handleError(errno);
-                return;
-            }
-            
-            
-        } else {
-            GDSUtil.log("response failed");
-        }
+        	GDSUtil.log( "Success sign in!" );
 
-        
-        // Adding tracking channel if it is not exist
-        errno = -1;
-        JSONResponse = null;
-        for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
-            JSONResponse = new JsonApplyChannelRequest(authToken, login,
-                    "Channel for tracking", "", 40000, serverUrl).doRequest();
-            if (JSONResponse != null)
-                break;
-        }
-        
-        errno = -1;
-        if (JSONResponse != null) {
-			JsonBaseResponse response = new JsonBaseResponse();
-			response.parseJson(JSONResponse);
-			errno = response.getErrno();
-			if (errno == Errno.SUCCESS || errno == Errno.CHANNEL_ALREADY_EXIST_ERROR) {
-                GDSUtil.log("Channel " + login + " added successfully or already exists, subscribing");
-                
-                for (int i = 0; i < GDSUtil.ATTEMPTS; i++) {
-                	JSONResponse = new JsonSubscribeRequest(authToken, login, serverUrl).doRequest();
-                	if (JSONResponse != null)
-                		break;
-                }
-        		
-        		
-        		if (JSONResponse != null) {
-        			JsonBaseResponse subscribeResponse = new JsonBaseResponse();
-        			subscribeResponse.parseJson(JSONResponse);
-        			int subscribeErrno = subscribeResponse.getErrno();
-        			if (subscribeErrno == Errno.SUCCESS || subscribeErrno == Errno.CHANNEL_ALREADY_SUBSCRIBED_ERROR){
-        				if (GDSUtil.DEBUG) {
-        					Log.v(GDSUtil.LOG, "Subscribed to " + login + " channel");
-        				}
-        			} else {
-        				handleError(errno);
-        				return;
-        			}
-        		} 
-                
+            settings.setLogin(m_loginEdit.getText().toString());
+            settings.setPassword(m_passwordEdit.getText().toString());
+            settings.setAuthToken(authToken);
+            if (m_rememberCheck.isChecked()) {
+                settings.setRememberMe(true);
             } else {
-                handleError(errno);
-                return;
+                settings.setRememberMe(false);
             }
-            
-            
-        } else {
-            GDSUtil.log("response failed");
-        }
-        
-        
-        
-        settings.setLogin(m_loginEdit.getText().toString());
-        settings.setPassword(m_passwordEdit.getText().toString());
-        settings.setAuthToken(authToken);
-        if (m_rememberCheck.isChecked()) {
-            settings.setRememberMe(true);
-        } else {
-            settings.setRememberMe(false);
-        }
 
-        Intent i = new Intent(this, MainActivity.class);
-        i.putExtra(GDSUtil.AUTH_TOKEN, authToken);
-        i.putExtra(GDSUtil.LOGIN, login);
-        i.putExtra(GDSUtil.CHANNEL, channel);
-        startActivity(i);
+            Intent i = new Intent(this, MainActivity.class);
+            i.putExtra(GDSUtil.AUTH_TOKEN, authToken);
+            i.putExtra(GDSUtil.LOGIN, login);
+            i.putExtra(GDSUtil.CHANNEL, channel);
+            startActivity(i);
+        	
+            
+        }catch (RequestException e){
+        	Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            GDSUtil.log( e.getMessage() );
+        }
+      
+        
+
     }
 
 
 
-    private void createAccount() {
+	private void createAccount() {
         GDSUtil.log("creating account");
         startActivity(new Intent(this, CreateAccountActivity.class));
     }

@@ -10,6 +10,7 @@ import ru.spb.osll.GDS.preferences.Settings;
 import ru.spb.osll.json.Errno;
 import ru.spb.osll.json.JsonApplyMarkRequest;
 import ru.spb.osll.json.JsonBaseResponse;
+import ru.spb.osll.json.RequestException;
 import ru.spb.osll.json.IRequest.IResponse;
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -163,34 +164,17 @@ public class TrackingService extends Service {
 	
 	private void sendMark(Location location) {
 		String serverUrl = m_settings.getServerUrl();
-		JSONObject JSONResponse = null;
-		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
-			JSONResponse = new JsonApplyMarkRequest(m_authToken, m_channel, "gds tracker", "",
-					"gds tracker", location.getLatitude(), location.getLongitude(), 0,
-					GDSUtil.getUtcTime(new Date()), serverUrl).doRequest();
-			if (JSONResponse != null) 
-				break;
-		}
-		if (JSONResponse != null) {
-			JsonBaseResponse response = new JsonBaseResponse();
-			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
-			if (errno == Errno.SUCCESS) {
-				if (GDSUtil.DEBUG) {
-					Log.v(TrackingManager.LOG, "Mark sent successfully");
-				}
-				broadcastMarkSent(location);
-			} else {
-				handleError(errno);
-				return;
-			}
-		} else {
-			if (GDSUtil.DEBUG) {
-				Log.v(TrackingManager.LOG, "response failed");
-			}
+		
+		try {
+			RequestSenderWrapper.writeTag(m_authToken, m_channel, 
+					location.getLatitude(),  location.getLongitude(), serverUrl);
+			broadcastMarkSent(location);
+			
+		}catch (RequestException e){
+			GDSUtil.log(e.getMessage());
 			broadcastError("Failed to send location");
-			return;
 		}
+		
 	}
 	
 	private void handleError(int errno) {

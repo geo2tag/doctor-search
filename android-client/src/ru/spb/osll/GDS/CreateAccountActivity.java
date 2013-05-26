@@ -35,6 +35,7 @@ import org.json.JSONObject;
 import ru.spb.osll.GDS.exception.ExceptionHandler;
 import ru.spb.osll.GDS.preferences.Settings;
 import ru.spb.osll.GDS.preferences.SettingsActivity;
+import ru.spb.osll.GDS.tracking.RequestSenderWrapper;
 import ru.spb.osll.json.Errno;
 import ru.spb.osll.json.JsonAddUserRequest;
 import ru.spb.osll.json.JsonApplyChannelRequest;
@@ -43,6 +44,7 @@ import ru.spb.osll.json.JsonBaseResponse;
 import ru.spb.osll.json.IRequest.IResponse;
 import ru.spb.osll.json.JsonLoginRequest;
 import ru.spb.osll.json.JsonSubscribeRequest;
+import ru.spb.osll.json.RequestException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -127,14 +129,13 @@ public class CreateAccountActivity extends BasicActivity {
 	}
 	
 	private void register() {
-		boolean success = false;
 		String login = m_loginEdit.getText().toString();
 		String email = m_emailEdit.getText().toString();
 		String password = m_passwordEdit.getText().toString();
 		String re_password = m_rePasswordEdit.getText().toString();
 		String serverUrl = new Settings(this).getServerUrl();
 		String authToken = "";
-		int errno = -1;
+		String channel = login;
 		
 		// Check fields
 		if (login.length() == 0) {
@@ -154,7 +155,32 @@ public class CreateAccountActivity extends BasicActivity {
 			return;
 		}
 		
-		// Add user
+		
+		
+		try{
+			RequestSenderWrapper.addUser(login, password, email, serverUrl);
+			
+        	authToken = RequestSenderWrapper.login(login, password, serverUrl);
+        	
+        	RequestSenderWrapper.addChannel(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl);
+        	RequestSenderWrapper.subscribeChannel(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl);
+        	
+        	RequestSenderWrapper.addChannel(authToken, channel, serverUrl);
+        	RequestSenderWrapper.subscribeChannel(authToken, channel, serverUrl);
+        	
+        	
+			Toast.makeText(this, "Account has been created!",
+					Toast.LENGTH_LONG).show();
+			finish();
+        	
+		}catch (RequestException e){
+			
+			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            GDSUtil.log( e.getMessage() );
+		}
+		
+		
+/*		// Add user
 		JSONObject JSONResponse = null;
 		for(int i = 0; i < 1; i++){
 			JSONResponse = new JsonAddUserRequest(login, password, email, serverUrl).doRequest();
@@ -321,7 +347,7 @@ public class CreateAccountActivity extends BasicActivity {
 			Toast.makeText(this, "Account has been created!",
 					Toast.LENGTH_LONG).show();
 			finish();
-		}		
+		}	*/	
 	}
 	
 
