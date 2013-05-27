@@ -1,5 +1,6 @@
 package ru.spb.osll.GDS.events;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -14,11 +15,13 @@ import ru.spb.osll.GDS.LocationService;
 import ru.spb.osll.GDS.R;
 import ru.spb.osll.GDS.exception.ExceptionHandler;
 import ru.spb.osll.GDS.preferences.Settings;
+import ru.spb.osll.GDS.tracking.RequestSenderWrapper;
 import ru.spb.osll.json.IRequest.IResponse;
 import ru.spb.osll.json.Errno;
 import ru.spb.osll.json.JsonBaseResponse;
 import ru.spb.osll.json.JsonFilterCircleRequest;
 import ru.spb.osll.json.JsonFilterResponse;
+import ru.spb.osll.json.RequestException;
 import ru.spb.osll.objects.Channel;
 import ru.spb.osll.objects.Mark;
 import android.app.Service;
@@ -130,106 +133,86 @@ public class EventsService extends Service {
 		m_eventsThread.start();
 	}
 	
+	
 	private void requestEvents(Location location) {
 		String serverUrl = m_settings.getServerUrl();
-		JSONObject JSONResponse = null;
-		for(int i = 0; i < GDSUtil.ATTEMPTS; i++) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(new Date());
-			calendar.add(Calendar.YEAR, 1); // just in case
-			String timeTo = GDSUtil.getUtcTime(calendar.getTime());
-			calendar.add(Calendar.YEAR, -1); // return current date
-			calendar.add(Calendar.HOUR, - GDSUtil.RELEVANT_PERIOD_IN_HOURS);
-			String timeFrom = GDSUtil.getUtcTime(calendar.getTime());
-			JSONResponse = new JsonFilterCircleRequest(m_authToken,
-					location.getLatitude(), location.getLongitude(),
-					m_settings.getRadius(), timeFrom, timeTo,
-					serverUrl).doRequest();
-			if (JSONResponse != null) 
-				break;
+		
+		
+		try{
+			List<Channel> channels = RequestSenderWrapper.filterCircleRequest(m_authToken,
+					location.getLatitude(), location.getLongitude(), m_settings.getRadius(), serverUrl);
+			GDSUtil.log("Recieved "+ channels.size() +" channels");
+			
+			processChannels(channels);
+			
+		}catch (RequestException e){
+			GDSUtil.log("Error during filterCircle request processing");
+			broadcastError("Failed to send location");
 		}
-		if (JSONResponse != null) {
-			JsonFilterResponse response = new JsonFilterResponse();
-			response.parseJson(JSONResponse);
-			int errno = response.getErrno();
-			if (errno == Errno.SUCCESS) {
-				if (GDSUtil.DEBUG) {
-					Log.v(EventsManager.LOG, "Events received successfully");
-				}
 
-				List<Channel> channels = response.getChannelsData();
-				for (Channel channel : channels) {
-					if (channel.getName().compareTo(GDSUtil.EVENTS_CHANNEL) == 0) {	
-						if (GDSUtil.NOT_RECEIVE_OWN_EVENTS) {
-							Iterator<Mark> iter = channel.getMarks().iterator();
-							String login = m_settings.getLogin();
-							while (iter.hasNext()) {
-								Mark mark = iter.next();
-								if (login.compareTo(mark.getUser()) == 0) {
-									iter.remove();
-								}
-							}
-						}
-
-						// are there new identificators?
-						boolean new_ids = false;
-						
-						// are some identificators expired?
-						boolean expired_ids = false;
-						
-						// Set of new identificators
-						Set<Long> events_ids_new = new HashSet<Long>();
-						
-						for (Mark mark : channel.getMarks()) {
-							events_ids_new.add(mark.getId());
-							if (!m_events_ids.contains(mark.getId()))
-								new_ids = true;
-						}
-						if (!events_ids_new.containsAll(m_events_ids))
-							expired_ids = true;
-						
-						if (new_ids) {
-							Thread alertThread = new Thread() {
-								@Override
-								public void run() {
-									// long[] pattern = {0, 500, 500, 500, 500, 500};
-						            // Start the vibration
-						            // Vibrator vibrator = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
-						            // vibrator.vibrate(pattern, -1);
-									MediaPlayer player = MediaPlayer.create(EventsService.this,
-											R.raw.siren);
-									player.start();
-									while (player.isPlaying()) {
-										try {
-											Thread.sleep(player.getDuration() + 500);
-										} catch (InterruptedException e) {
-											e.printStackTrace();
-										}
-									}
-									player.release();
-									player = null;
-								}
-							};
-							alertThread.start();
-						}
-						
-						if (new_ids || expired_ids) {
-							m_events_ids = events_ids_new;
-							m_savedEvents = channel;
-							broadcastEvents(channel);
+	}
+	
+	
+	private void processChannels(List<Channel> channels){
+		for (Channel channel : channels) {
+			GDSUtil.log("Processing "+channel.getName());
+			if (channel.getName().compareTo(GDSUtil.EVENTS_CHANNEL) == 0) {	
+				if (GDSUtil.NOT_RECEIVE_OWN_EVENTS) {
+					Iterator<Mark> iter = channel.getMarks().iterator();
+					String login = m_settings.getLogin();
+					while (iter.hasNext()) {
+						Mark mark = iter.next();
+						if (login.compareTo(mark.getUser()) == 0) {
+							iter.remove();
 						}
 					}
 				}
-			} else {
-				handleError(errno);
-				return;
+
+				// are there new identificators?
+				boolean new_ids = false;
+				
+				// are some identificators expired?
+				boolean expired_ids = false;
+				
+				// Set of new identificators
+				Set<Long> events_ids_new = new HashSet<Long>();
+				
+				for (Mark mark : channel.getMarks()) {
+					events_ids_new.add(mark.getId());
+					if (!m_events_ids.contains(mark.getId()))
+						new_ids = true;
+				}
+				if (!events_ids_new.containsAll(m_events_ids))
+					expired_ids = true;
+				
+				if (new_ids) {
+					Thread alertThread = new Thread() {
+						@Override
+						public void run() {
+							MediaPlayer player = MediaPlayer.create(EventsService.this,
+									R.raw.siren);
+							player.start();
+							while (player.isPlaying()) {
+								try {
+									Thread.sleep(player.getDuration() + 500);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+							player.release();
+							player = null;
+						}
+					};
+					alertThread.start();
+				}
+				
+				
+				if (new_ids || expired_ids) {
+					m_events_ids = events_ids_new;
+					m_savedEvents = channel;
+					broadcastEvents(channel);
+				}
 			}
-		} else {
-			if (GDSUtil.DEBUG) {
-				Log.v(EventsManager.LOG, "response failed");
-			}
-			broadcastError("Failed to send location");
-			return;
 		}
 	}
 	
@@ -277,6 +260,7 @@ public class EventsService extends Service {
 				}
 				break;
 			}
+			
 		}
 	}
 	
@@ -288,10 +272,11 @@ public class EventsService extends Service {
 	}
 	
 	private void broadcastEvents(Channel eventsChannel) {
+		GDSUtil.log("Broadcasting channel = " + eventsChannel.toString() + " !");
+		
 		Intent intent = new Intent(EventsReceiver.ACTION_EVENTS);
 		intent.putExtra(EventsReceiver.TYPE_OPERATION, EventsReceiver.TYPE_EVENTS);
-		Mark[] marks = eventsChannel.getMarks().toArray(new Mark[0]);
-		intent.putExtra(EventsReceiver.EVENTS, marks);
+		intent.putExtra(EventsReceiver.EVENTS, (Serializable)eventsChannel.getMarks());
 		sendBroadcast(intent);
 	}
 

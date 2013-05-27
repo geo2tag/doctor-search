@@ -1,5 +1,9 @@
 package ru.spb.osll.GDS.events;
 
+import java.io.Serializable;
+import java.util.List;
+
+import ru.spb.osll.objects.Channel;
 import ru.spb.osll.objects.Mark;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,11 +30,8 @@ public abstract class EventsReceiver extends BroadcastReceiver {
 			onErrorOccured(intent.getStringExtra(ERROR));
 			break;
 		case TYPE_EVENTS:
-			Parcelable[] result = intent.getParcelableArrayExtra(EVENTS);
-			Mark[] marks = new Mark[result.length];
-			for (int i = 0; i < result.length; ++i) {
-				marks[i] = (Mark) result[i];
-			}
+			Serializable result = intent.getSerializableExtra(EVENTS);
+			List<Mark> marks = (List<Mark>)result;
 			onEvents(marks);
 			break;
 		}
@@ -38,6 +39,6 @@ public abstract class EventsReceiver extends BroadcastReceiver {
 
 	public abstract void onErrorOccured(String error);
 	
-	public abstract void onEvents(Mark[] mark);
+	public abstract void onEvents(final List<Mark> marks );
 
 }

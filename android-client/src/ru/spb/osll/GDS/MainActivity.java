@@ -212,7 +212,7 @@ public class MainActivity extends TabActivity {
 				String description = m_settings.getDescription();
 				
 				try {
-					RequestSenderWrapper.writeTag(m_authToken, m_channel,
+					RequestSenderWrapper.writeTag(m_authToken, GDSUtil.EVENTS_CHANNEL,
 							location.getLatitude(), location.getLongitude(), serverUrl);
 					GDSUtil.log("SOS sent successfuly!");
 				}catch (RequestException e){

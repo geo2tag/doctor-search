@@ -3,7 +3,9 @@
  */
 package ru.spb.osll.GDS.tracking;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import ru.spb.osll.GDS.GDSUtil;
 import ru.spb.osll.json.Errno;
@@ -13,12 +15,15 @@ import ru.spb.osll.json.JsonApplyChannelRequest;
 import ru.spb.osll.json.JsonApplyChannelResponse;
 import ru.spb.osll.json.JsonApplyMarkRequest;
 import ru.spb.osll.json.JsonApplyMarkResponse;
+import ru.spb.osll.json.JsonFilterCircleRequest;
+import ru.spb.osll.json.JsonFilterResponse;
 import ru.spb.osll.json.JsonLoginRequest;
 import ru.spb.osll.json.JsonLoginResponse;
 import ru.spb.osll.json.JsonSubscribeRequest;
 import ru.spb.osll.json.JsonSubscribeResponse;
 import ru.spb.osll.json.RequestException;
 import ru.spb.osll.json.SafeRequestSender;
+import ru.spb.osll.objects.Channel;
 
 /**
  * Common routines for requests sending 
@@ -89,5 +94,29 @@ public class RequestSenderWrapper {
 		
 		SafeRequestSender.safeSendingRequest(req, res, "WriteTag response is empty!",
 				"WriteTag error =  ", ATTEMPTS, possibleErrnos);
+	}
+	
+	public static List<Channel> filterCircleRequest(String authToken, double latitude, double longitude,
+			double radius, String serverUrl) throws RequestException{
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.YEAR, 1); // just in case
+		String timeTo = GDSUtil.getUtcTime(calendar.getTime());
+		calendar.add(Calendar.YEAR, -1); // return current date
+		calendar.add(Calendar.HOUR, - GDSUtil.RELEVANT_PERIOD_IN_HOURS);
+		String timeFrom = GDSUtil.getUtcTime(calendar.getTime());
+		
+		JsonFilterCircleRequest req = new JsonFilterCircleRequest(authToken,
+				latitude, longitude, radius, timeFrom, timeTo, serverUrl);
+
+		JsonFilterResponse res = new JsonFilterResponse();
+		
+		int[] possibleErrnos = {Errno.SUCCESS};
+		
+		SafeRequestSender.safeSendingRequest(req, res, "FilterCircle response is empty!",
+				"FilterCircle error =  ", ATTEMPTS, possibleErrnos);
+		
+		return res.getChannelsData();
 	}
 }

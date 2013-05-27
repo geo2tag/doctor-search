@@ -1,6 +1,7 @@
 package ru.spb.osll.GDS.maps;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.spb.osll.GDS.GDSUtil;
 import ru.spb.osll.objects.Mark;
@@ -50,7 +51,7 @@ public class EventsItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	return true;
 	}
 	
-	public void setEvents(Mark[] marks) {
+	public void setEvents(List<Mark> marks) {
 		m_items.clear();
 		for (Mark mark : marks) {
 			m_items.add(new MarkOverlayItem(mark, "Event", ""));

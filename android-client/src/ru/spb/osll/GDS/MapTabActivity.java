@@ -6,7 +6,9 @@ import ru.spb.osll.GDS.events.EventsManager;
 import ru.spb.osll.GDS.events.EventsReceiver;
 import ru.spb.osll.GDS.events.EventsService;
 import ru.spb.osll.GDS.maps.EventsItemizedOverlay;
+import ru.spb.osll.GDS.maps.PositionOverlay;
 //import ru.spb.osll.GDS.maps.PositionOverlay;
+import ru.spb.osll.objects.Channel;
 import ru.spb.osll.objects.Mark;
 import android.content.Context;
 import android.content.IntentFilter;
@@ -18,6 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapView;
@@ -30,7 +33,7 @@ public class MapTabActivity extends MapActivity {
 	String m_authToken;
 	MapView m_mapView;
 	EventsItemizedOverlay m_eventsOverlay;
-//	PositionOverlay m_positionOverlay;
+	PositionOverlay m_positionOverlay;
 	
 	private LocationManager m_locationManager;
 	private LocationListener m_locationListener = new LocationListener() {
@@ -79,8 +82,8 @@ public class MapTabActivity extends MapActivity {
 		m_locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, m_locationListener);
 		Drawable positionDrawable = this.getResources().getDrawable(
 				R.drawable.position32);
-//		m_positionOverlay = new PositionOverlay(positionDrawable);
-//		mapOverlays.add(m_positionOverlay);
+		m_positionOverlay = new PositionOverlay(positionDrawable, this);
+		mapOverlays.add(m_positionOverlay);
 		updatePosition();
 	    
 	    m_eventsManager = new EventsManager();
@@ -120,14 +123,19 @@ public class MapTabActivity extends MapActivity {
 						"can't get location to update position on map");
 			}
 		} else {
-//			m_positionOverlay.updatePosition(location);
+			m_positionOverlay.updatePosition(location);
 			m_mapView.invalidate();
+			
+			int lat = (int) (location.getLatitude() * 1E6);
+			int lng = (int) (location.getLongitude() * 1E6);
+			GeoPoint point = new GeoPoint(lat, lng);
+			m_mapView.getController().animateTo(point);
 		}
 	}
 	
 	private EventsReceiver m_eventsReceiver = new EventsReceiver() {
 		@Override
-		public void onEvents(final Mark[] marks) {
+		public void onEvents(final List<Mark> marks ) {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
@@ -136,7 +144,7 @@ public class MapTabActivity extends MapActivity {
 							Log.v(GDSUtil.LOG, mark.toString());
 						}
 					}
-					m_eventsOverlay.setEvents(marks);
+					m_eventsOverlay.setEvents( marks);
 					m_mapView.invalidate();
 				}
 			});
