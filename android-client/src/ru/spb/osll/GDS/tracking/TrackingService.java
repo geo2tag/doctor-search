@@ -166,7 +166,7 @@ public class TrackingService extends Service {
 		String serverUrl = m_settings.getServerUrl();
 		
 		try {
-			RequestSenderWrapper.writeTag(m_authToken, m_channel, 
+			RequestSenderWrapper.writeTag(m_authToken, m_channel, "",
 					location.getLatitude(),  location.getLongitude(), serverUrl);
 			broadcastMarkSent(location);
 			

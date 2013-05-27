@@ -212,14 +212,14 @@ public class MainActivity extends TabActivity {
 				String description = m_settings.getDescription();
 				
 				try {
-					RequestSenderWrapper.writeTag(m_authToken, GDSUtil.EVENTS_CHANNEL,
+					RequestSenderWrapper.writeTag(m_authToken, GDSUtil.EVENTS_CHANNEL, description,
 							location.getLatitude(), location.getLongitude(), serverUrl);
 					GDSUtil.log("SOS sent successfuly!");
-				}catch (RequestException e){
+				}catch (Exception e){
+					GDSUtil.log("Problem during sending SOS "+e.getMessage());
 					m_progress.dismiss();
 					Toast.makeText(MainActivity.this, "Failed to send location", Toast.LENGTH_LONG).show();
-					return;
-					
+					return;	
 				}
 				m_handler.sendEmptyMessage(0);
 				

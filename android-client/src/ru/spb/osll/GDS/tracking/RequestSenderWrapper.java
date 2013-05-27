@@ -83,11 +83,11 @@ public class RequestSenderWrapper {
 				"SubscribeChannel error = ", ATTEMPTS, possibleErrnos);
 	}
 	
-	public static void writeTag(String authToken, String channelName, double latitude, double longitude, String serverUrl)throws RequestException{
+	public static void writeTag(String authToken, String channelName, String description, double latitude, double longitude, String serverUrl)throws RequestException{
 		String time = GDSUtil.getUtcTime(new Date());
 		
 		JsonApplyMarkRequest req = new JsonApplyMarkRequest(authToken, channelName, GENERATED_TAG_TITLE, GENERATED_TAG_LINK,
-				GENERATED_TAG_DESCRIPTION, latitude, longitude, 0, time, serverUrl);
+				description, latitude, longitude, 0, time, serverUrl);
 		JsonApplyMarkResponse res = new JsonApplyMarkResponse();
 		
 		int[] possibleErrnos = {Errno.SUCCESS};
