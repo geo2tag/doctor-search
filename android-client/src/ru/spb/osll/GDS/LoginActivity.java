@@ -38,7 +38,9 @@ import ru.spb.osll.GDS.preferences.SettingsActivity;
 import ru.spb.osll.GDS.tracking.RequestSenderWrapper;
 
 import ru.spb.osll.json.RequestException;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,13 +57,13 @@ public class LoginActivity extends BasicActivity {
     private EditText m_loginEdit;
     private EditText m_passwordEdit;
     private CheckBox m_rememberCheck;
+    private Settings m_settings = new Settings(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_view);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
-
 
 
         m_loginEdit = (EditText) findViewById(R.id.edit_login);
@@ -109,10 +111,9 @@ public class LoginActivity extends BasicActivity {
     }
 
     private void initViews() {
-        Settings settings = new Settings(this);
-        if (settings.isRememberMe()) {
-            m_loginEdit.setText(settings.getLogin());
-            m_passwordEdit.setText(settings.getPassword());
+        if (m_settings.isRememberMe()) {
+            m_loginEdit.setText(m_settings.getLogin());
+            m_passwordEdit.setText(m_settings.getPassword());
             m_rememberCheck.setChecked(true);
         } else {
             m_loginEdit.setText("");
@@ -145,11 +146,7 @@ public class LoginActivity extends BasicActivity {
         String login = m_loginEdit.getText().toString();
         String password = m_passwordEdit.getText().toString();
         String channel = login;
-        Settings settings = new Settings(this);
-        String serverUrl = settings.getServerUrl();
-        //String serverUrl = new Settings(this).getPreferences().getString(
-        //		IGDSSettings.SERVER_URL, "");
-        String authToken = "";
+        String serverUrl = m_settings.getServerUrl();
 
         if (login.length()==0 || password.length()==0){
         	GDSUtil.log("login or password are empty");
@@ -158,43 +155,43 @@ public class LoginActivity extends BasicActivity {
         }
         
         
-        try{
-        	authToken = RequestSenderWrapper.login(login, password, serverUrl);
-        	
-        	RequestSenderWrapper.addChannel(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl);
-        	RequestSenderWrapper.subscribeChannel(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl);
-        	
-        	RequestSenderWrapper.addChannel(authToken, channel, serverUrl);
-        	RequestSenderWrapper.subscribeChannel(authToken, channel, serverUrl);
-
-        	GDSUtil.log( "Success sign in!" );
-
-            settings.setLogin(m_loginEdit.getText().toString());
-            settings.setPassword(m_passwordEdit.getText().toString());
-            settings.setAuthToken(authToken);
-            if (m_rememberCheck.isChecked()) {
-                settings.setRememberMe(true);
-            } else {
-                settings.setRememberMe(false);
-            }
-
-            Intent i = new Intent(this, MainActivity.class);
-            i.putExtra(GDSUtil.AUTH_TOKEN, authToken);
-            i.putExtra(GDSUtil.LOGIN, login);
-            i.putExtra(GDSUtil.CHANNEL, channel);
-            startActivity(i);
-        	
-            
-        }catch (RequestException e){
-        	Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-            GDSUtil.log( e.getMessage() );
-        }
-      
+        RequestAsyncTask asyncTask = new RequestAsyncTask(login, password, channel, 
+    			serverUrl, this);
+        asyncTask.addSuccessListener(m_onRequestAsyncTaskSuccess);
         
+        asyncTask.execute(null);       
 
     }
 
+    private OnRequestAsyncTaskSuccessListener m_onRequestAsyncTaskSuccess = new OnRequestAsyncTaskSuccessListener(){
 
+		@Override
+		public void onRequestAsyncTaskSuccessListener(RequestAsyncTask task) {
+			// TODO Auto-generated method stub
+			String login = task.getLogin();
+			String password = task.getPassword();
+			String authToken = task.getAuthToken();
+			String channel = task.getChannel();
+			
+			m_settings.setLogin(login);
+			m_settings.setPassword(password);
+			m_settings.setAuthToken(authToken);
+			if (m_rememberCheck.isChecked()) {
+				m_settings.setRememberMe(true);
+			} else {
+				m_settings.setRememberMe(false);
+			}
+
+			Intent i = new Intent(task.getContext(), MainActivity.class);
+			i.putExtra(GDSUtil.AUTH_TOKEN, authToken);
+			i.putExtra(GDSUtil.LOGIN, login);
+			i.putExtra(GDSUtil.CHANNEL, channel);
+			startActivity(i);
+		}
+    	
+    };
+
+    
 
 	private void createAccount() {
         GDSUtil.log("creating account");
@@ -205,4 +202,7 @@ public class LoginActivity extends BasicActivity {
         GDSUtil.log("opening settings");
         startActivity(new Intent(this, SettingsActivity.class));
     }
+    
+    
+
 }

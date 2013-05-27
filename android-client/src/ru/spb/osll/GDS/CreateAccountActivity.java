@@ -45,7 +45,9 @@ import ru.spb.osll.json.IRequest.IResponse;
 import ru.spb.osll.json.JsonLoginRequest;
 import ru.spb.osll.json.JsonSubscribeRequest;
 import ru.spb.osll.json.RequestException;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -134,7 +136,6 @@ public class CreateAccountActivity extends BasicActivity {
 		String password = m_passwordEdit.getText().toString();
 		String re_password = m_rePasswordEdit.getText().toString();
 		String serverUrl = new Settings(this).getServerUrl();
-		String authToken = "";
 		String channel = login;
 		
 		// Check fields
@@ -155,201 +156,26 @@ public class CreateAccountActivity extends BasicActivity {
 			return;
 		}
 		
+		 RequestAsyncTask asyncTask = new RequestAsyncTask(login, password, channel, 
+	    			serverUrl, this);
+	     asyncTask.addSuccessListener(m_onRequestAsyncTaskSuccess);
+	     asyncTask.setEmail(email);
+	        
+	     asyncTask.execute(null);    
 		
-		
-		try{
-			RequestSenderWrapper.addUser(login, password, email, serverUrl);
-			
-        	authToken = RequestSenderWrapper.login(login, password, serverUrl);
-        	
-        	RequestSenderWrapper.addChannel(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl);
-        	RequestSenderWrapper.subscribeChannel(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl);
-        	
-        	RequestSenderWrapper.addChannel(authToken, channel, serverUrl);
-        	RequestSenderWrapper.subscribeChannel(authToken, channel, serverUrl);
-        	
-        	
-			Toast.makeText(this, "Account has been created!",
-					Toast.LENGTH_LONG).show();
-			finish();
-        	
-		}catch (RequestException e){
-			
-			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-            GDSUtil.log( e.getMessage() );
-		}
-		
-		
-/*		// Add user
-		JSONObject JSONResponse = null;
-		for(int i = 0; i < 1; i++){
-			JSONResponse = new JsonAddUserRequest(login, password, email, serverUrl).doRequest();
-			if (JSONResponse != null) 
-				break;
-		}
-		if (JSONResponse != null) {
-			JsonBaseResponse response = new JsonBaseResponse();
-			response.parseJson(JSONResponse);
-			errno = response.getErrno();
-			if (errno == Errno.SUCCESS) {
-				if (GDSUtil.DEBUG) {
-					Log.v(GDSUtil.LOG, "user added successfully");
-				}
-			} else {
-				handleError(errno);
-				return;
-			}
-
-		} else {
-			if (GDSUtil.DEBUG) {
-				Log.v(GDSUtil.LOG, "response failed");
-			}
-			handleError(errno);
-			return;
-		}
-		
-		// Login
-		errno = -1;
-		JSONResponse = null;
-		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
-			JSONResponse = new JsonLoginRequest(login, password, serverUrl).doRequest();
-			if (JSONResponse != null) 
-				break;
-		}
-		if (JSONResponse != null) {
-			JsonBaseResponse response = new JsonBaseResponse();
-			response.parseJson(JSONResponse);
-			errno = response.getErrno();
-			if (errno == Errno.SUCCESS) {
-				if (GDSUtil.DEBUG) {
-					Log.v(GDSUtil.LOG, "user logged in successfully");
-				}
-			} else {
-				handleError(errno);
-				return;
-			}
-			
-			authToken = JsonBase.getString(JSONResponse, IResponse.AUTH_TOKEN);
-
-		} else {
-			handleError(errno);
-			return;
-		}
-		
-		// Add Events channel
-		errno = -1;
-		JSONResponse = null;
-		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
-			JSONResponse = new JsonApplyChannelRequest(authToken, GDSUtil.EVENTS_CHANNEL,
-					"Channel with Events", "", 40000, serverUrl).doRequest();
-			if (JSONResponse != null) 
-				break;
-		}
-		if (JSONResponse != null) {
-			JsonBaseResponse response = new JsonBaseResponse();
-			response.parseJson(JSONResponse);
-			errno = response.getErrno();
-			if (errno == Errno.SUCCESS) {
-				if (GDSUtil.DEBUG) {
-					Log.v(GDSUtil.LOG, "Channel Events added successfully");
-				}
-			} else if (errno == Errno.CHANNEL_ALREADY_EXIST_ERROR) {
-				if (GDSUtil.DEBUG) {
-					Log.v(GDSUtil.LOG, "Channel Events already exists");
-				}
-			}
-			else {
-				handleError(errno);
-				return;
-			}
-		} else {
-			handleError(errno);
-		}
-		
-		// Add channel for tracking
-		errno = -1;
-		JSONResponse = null;
-		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
-			JSONResponse = new JsonApplyChannelRequest(authToken, login,
-					login + "'s channel", "", 400, serverUrl).doRequest();
-			if (JSONResponse != null) 
-				break;
-		}
-		if (JSONResponse != null) {
-			JsonBaseResponse response = new JsonBaseResponse();
-			response.parseJson(JSONResponse);
-			errno = response.getErrno();
-			if (errno == Errno.SUCCESS) {
-				if (GDSUtil.DEBUG) {
-					Log.v(GDSUtil.LOG, "Channel for tracking added successfully");
-				}
-			} else {
-				handleError(errno);
-				return;
-			}
-		} else {
-			handleError(errno);
-			return;
-		}
-		
-		// Subscribe to tracking channel
-		errno = -1;
-		JSONResponse = null;
-		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
-			JSONResponse = new JsonSubscribeRequest(authToken, login, serverUrl).doRequest();
-			if (JSONResponse != null) 
-				break;
-		}
-		if (JSONResponse != null) {
-			JsonBaseResponse response = new JsonBaseResponse();
-			response.parseJson(JSONResponse);
-			errno = response.getErrno();
-			if (errno == Errno.SUCCESS) {
-				if (GDSUtil.DEBUG) {
-					Log.v(GDSUtil.LOG, "Subscribed to tracking channel");
-				}
-			} else {
-				handleError(errno);
-				return;
-			}
-		} else {
-			handleError(errno);
-			return;
-		}
-		
-		// Subscribe to Events channel (for doctors)
-		errno = -1;
-		JSONResponse = null;
-		for(int i = 0; i < GDSUtil.ATTEMPTS; i++){
-			JSONResponse = new JsonSubscribeRequest(authToken, GDSUtil.EVENTS_CHANNEL, serverUrl).doRequest();
-			if (JSONResponse != null) 
-				break;
-		}
-		if (JSONResponse != null) {
-			JsonBaseResponse response = new JsonBaseResponse();
-			response.parseJson(JSONResponse);
-			errno = response.getErrno();
-			if (errno == Errno.SUCCESS) {
-				if (GDSUtil.DEBUG) {
-					Log.v(GDSUtil.LOG, "Subscribed to Events channel");
-				}
-			} else {
-				handleError(errno);
-				return;
-			}
-			success = true;
-		} else {
-			handleError(errno);
-			return;
-		}
-
-		if (success) {
-			Toast.makeText(this, "Account has been created!",
-					Toast.LENGTH_LONG).show();
-			finish();
-		}	*/	
 	}
 	
+
+    private OnRequestAsyncTaskSuccessListener m_onRequestAsyncTaskSuccess = new OnRequestAsyncTaskSuccessListener(){
+
+		@Override
+		public void onRequestAsyncTaskSuccessListener(RequestAsyncTask task) {
+			Toast.makeText(task.getContext(), "Account has been created!",
+					Toast.LENGTH_LONG).show();
+			finish();
+		}
+    	
+    };
 
 
 }
