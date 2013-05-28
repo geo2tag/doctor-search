@@ -35,6 +35,9 @@
     <string name="tracking_period_summary">Set tracking period(in minutes)</string>
     <string name="welcome_activity_disabled_title">Disable welcome screen</string>
     <string name="welcome_activity_disabled_summary">Do not show welcome screen on startup</string>
+    <string name="events_period_title">Events update period</string>
+    <string name="events_period_summary">Set events update period(in seconds)</string>    
+    
     
     <!-- LoginActivity -->
     <string name="login">Login</string>

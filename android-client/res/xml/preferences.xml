@@ -34,6 +34,14 @@
 	        android:entries="@array/tracking_period_entries"
 	        android:defaultValue="1"
 	        android:entryValues="@array/tracking_period_values"/> 
+	        	        
+	    <ListPreference
+	        android:key="events_period"
+	        android:title="@string/events_period_title"
+	        android:summary="@string/events_period_summary"
+	        android:entries="@array/events_period_values"
+	        android:defaultValue="15"
+	        android:entryValues="@array/events_period_values"/> 
 	    
 	    <CheckBoxPreference
 	        android:key="welcome_activity_disabled"

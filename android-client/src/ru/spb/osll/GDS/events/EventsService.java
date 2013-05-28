@@ -43,7 +43,7 @@ public class EventsService extends Service {
 	private InternalReceiver m_internalReceiver = new InternalReceiver();
 	private Settings m_settings;
 	private MediaPlayer m_sirenPlayer;
-	private Set<Long> m_events_ids = new HashSet<Long>();
+	private Set<Integer> m_events_ids = new HashSet<Integer>();
 	private Channel m_savedEvents;
 
 	@Override
@@ -126,7 +126,7 @@ public class EventsService extends Service {
 						requestEvents(location);
 					}
 					
-					SystemClock.sleep(GDSUtil.EVENTS_INTERVAL * 1000);
+					SystemClock.sleep(m_settings.getEventsPeriod() * 1000);
 				}
 			}
 		});
@@ -175,11 +175,12 @@ public class EventsService extends Service {
 				boolean expired_ids = false;
 				
 				// Set of new identificators
-				Set<Long> events_ids_new = new HashSet<Long>();
+				Set<Integer> events_ids_new = new HashSet<Integer>();
 				
 				for (Mark mark : channel.getMarks()) {
-					events_ids_new.add(mark.getId());
-					if (!m_events_ids.contains(mark.getId()))
+					GDSUtil.log("Current mark id " + mark.hashCode());
+					events_ids_new.add(mark.hashCode());
+					if (!m_events_ids.contains(mark.hashCode()))
 						new_ids = true;
 				}
 				if (!events_ids_new.containsAll(m_events_ids))

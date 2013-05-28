@@ -136,6 +136,7 @@ public class MapTabActivity extends MapActivity {
 	private EventsReceiver m_eventsReceiver = new EventsReceiver() {
 		@Override
 		public void onEvents(final List<Mark> marks ) {
+			GDSUtil.log("Get "+ marks.size() + " events");
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
