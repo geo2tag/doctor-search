@@ -37,7 +37,8 @@
     <string name="welcome_activity_disabled_summary">Do not show welcome screen on startup</string>
     <string name="events_period_title">Events update period</string>
     <string name="events_period_summary">Set events update period(in seconds)</string>    
-    
+    <string name="relevant_period_title">Event max age</string>
+    <string name="relevant_period_summary">Set max age of loaded SOS events(in hours)</string>  
     
     <!-- LoginActivity -->
     <string name="login">Login</string>

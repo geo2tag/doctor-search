@@ -140,7 +140,8 @@ public class EventsService extends Service {
 		
 		try{
 			List<Channel> channels = RequestSenderWrapper.filterCircleRequest(m_authToken,
-					location.getLatitude(), location.getLongitude(), m_settings.getRadius(), serverUrl);
+					location.getLatitude(), location.getLongitude(), m_settings.getRadius(), 
+					m_settings.getRelevantPeriod(), serverUrl);
 			GDSUtil.log("Recieved "+ channels.size() +" channels");
 			
 			processChannels(channels);

@@ -97,14 +97,14 @@ public class RequestSenderWrapper {
 	}
 	
 	public static List<Channel> filterCircleRequest(String authToken, double latitude, double longitude,
-			double radius, String serverUrl) throws RequestException{
+			double radius, int relevantPeriodInHours, String serverUrl) throws RequestException{
 
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		calendar.add(Calendar.YEAR, 1); // just in case
 		String timeTo = GDSUtil.getUtcTime(calendar.getTime());
 		calendar.add(Calendar.YEAR, -1); // return current date
-		calendar.add(Calendar.HOUR, - GDSUtil.RELEVANT_PERIOD_IN_HOURS);
+		calendar.add(Calendar.HOUR, - relevantPeriodInHours);
 		String timeFrom = GDSUtil.getUtcTime(calendar.getTime());
 		
 		JsonFilterCircleRequest req = new JsonFilterCircleRequest(authToken,

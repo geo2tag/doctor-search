@@ -56,6 +56,8 @@ public class Settings {
 	private static final String RADIUS = "radius";
 	private static final String TRACKING_PERIOD = "tracking_period";
 	private static final String EVENTS_PERIOD = "events_period";
+	// How old tags can be
+	private static final String RELEVANT_PERIOD = "relevant_period";
 	
 	/* Application internal settings */
 	private static final String AUTH_TOKEN = "auth_token";
@@ -199,6 +201,18 @@ public class Settings {
 		SharedPreferences prefs = m_context.getSharedPreferences(GDS_SETTINGS, 0);
 	    prefs.edit().putString(EVENTS_PERIOD, String.valueOf(eventsPeriod)).commit();
 	}
+	
+	public int getRelevantPeriod() {
+		SharedPreferences prefs = m_context.getSharedPreferences(GDS_SETTINGS, 0);
+		String period = prefs.getString(RELEVANT_PERIOD, String.valueOf(GDSUtil.RELEVANT_PERIOD_IN_HOURS));
+	    return Integer.parseInt(period);
+	}
+	
+	public void setRelevantPeriod(int eventsPeriod) {
+		SharedPreferences prefs = m_context.getSharedPreferences(GDS_SETTINGS, 0);
+	    prefs.edit().putString(RELEVANT_PERIOD, String.valueOf(eventsPeriod)).commit();
+	}
+	
 	
 	
 	public static SharedPreferences getPreferences(Context c){

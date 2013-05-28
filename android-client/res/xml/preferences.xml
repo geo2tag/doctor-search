@@ -42,6 +42,14 @@
 	        android:entries="@array/events_period_values"
 	        android:defaultValue="15"
 	        android:entryValues="@array/events_period_values"/> 
+	        
+	    <ListPreference
+	        android:key="relevant_period"
+	        android:title="@string/relevant_period_title"
+	        android:summary="@string/relevant_period_summary"
+	        android:entries="@array/relevant_period_values"
+	        android:defaultValue="12"
+	        android:entryValues="@array/relevant_period_values"/> 
 	    
 	    <CheckBoxPreference
 	        android:key="welcome_activity_disabled"
