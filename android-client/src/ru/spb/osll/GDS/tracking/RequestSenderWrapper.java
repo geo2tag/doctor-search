@@ -19,6 +19,8 @@ import ru.spb.osll.json.JsonFilterCircleRequest;
 import ru.spb.osll.json.JsonFilterResponse;
 import ru.spb.osll.json.JsonLoginRequest;
 import ru.spb.osll.json.JsonLoginResponse;
+import ru.spb.osll.json.JsonSetDbRequest;
+import ru.spb.osll.json.JsonSetDbResponse;
 import ru.spb.osll.json.JsonSubscribeRequest;
 import ru.spb.osll.json.JsonSubscribeResponse;
 import ru.spb.osll.json.RequestException;
@@ -119,4 +121,15 @@ public class RequestSenderWrapper {
 		
 		return res.getChannelsData();
 	}
+	public static void setDB(String authToken, String dbName, String serverUrl) throws RequestException{
+		
+		JsonSetDbRequest req = new JsonSetDbRequest(authToken, dbName, serverUrl);
+		JsonSetDbResponse res = new JsonSetDbResponse();
+		
+		int[] possibleErrnos = {Errno.SUCCESS};
+		
+		SafeRequestSender.safeSendingRequest(req, res, "SetDb response is empty!",
+				"SetDb error =  ", ATTEMPTS, possibleErrnos);
+	}
+	
 }
