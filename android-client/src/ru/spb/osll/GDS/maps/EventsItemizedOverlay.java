@@ -1,6 +1,9 @@
 package ru.spb.osll.GDS.maps;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import ru.spb.osll.GDS.GDSUtil;
@@ -48,15 +51,51 @@ public class EventsItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 				+ GDSUtil.getTimeFromUtcString(item.getMark().getTime()) + "):\n"
 				+ item.getMark().getDescription());
 		dialog.show();
-	return true;
+		return true;
 	}
 	
-	public void setEvents(List<Mark> marks) {
+	synchronized public void setEvents(List<Mark> marks) {
 		m_items.clear();
 		for (Mark mark : marks) {
 			m_items.add(new MarkOverlayItem(mark, "Event", ""));
 		}
 		populate();
+	}
+	
+	public void clear(){
+		m_items.clear();
+		populate();
+		
+	}
+	
+	public void removeOldMarks(int newRelevantPeriod) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.add(Calendar.HOUR, - newRelevantPeriod);
+		Date currentDate = calendar.getTime();
+		
+		ArrayList<Mark> marks = new  ArrayList<Mark>();
+	
+		for (MarkOverlayItem m : m_items){
+			Mark mark = m.getMark();
+
+			try {
+				Date date = GDSUtil.getUtcDateFormat().parse(mark.getTime());
+				GDSUtil.log(currentDate.toString()+" " + date.toString());
+				if (date.before(currentDate)){
+					GDSUtil.log("This mark need to be deleted");
+					marks.add(mark);
+				}
+				
+				
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+		}
+		if (marks.size() != 0 ) setEvents(marks);
 	}
 	
 	public void addOverlay(MarkOverlayItem overlay) {

@@ -37,7 +37,6 @@ public class RequestSenderWrapper {
 	private static final int ATTEMPTS = 3;
 	private static final String GENERATED_CHANNEL_DESCRIPTION = "";
 	private static final String GENERATED_CHANNEL_URL = "";
-	private static final String GENERATED_TAG_DESCRIPTION = "";
 	private static final String GENERATED_TAG_TITLE = "";
 	private static final String GENERATED_TAG_LINK = "";
 	

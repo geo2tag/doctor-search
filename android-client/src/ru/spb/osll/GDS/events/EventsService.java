@@ -155,6 +155,11 @@ public class EventsService extends Service {
 	
 	
 	private void processChannels(List<Channel> channels){
+		if (channels.size() == 0){
+			broadcastEvents(new Channel());
+			return;
+		}
+		
 		for (Channel channel : channels) {
 			GDSUtil.log("Processing "+channel.getName());
 			if (channel.getName().compareTo(GDSUtil.EVENTS_CHANNEL) == 0) {	

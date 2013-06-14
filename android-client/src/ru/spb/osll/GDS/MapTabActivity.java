@@ -7,6 +7,7 @@ import ru.spb.osll.GDS.events.EventsReceiver;
 import ru.spb.osll.GDS.events.EventsService;
 import ru.spb.osll.GDS.maps.EventsItemizedOverlay;
 import ru.spb.osll.GDS.maps.PositionOverlay;
+import ru.spb.osll.GDS.preferences.Settings;
 //import ru.spb.osll.GDS.maps.PositionOverlay;
 import ru.spb.osll.objects.Channel;
 import ru.spb.osll.objects.Mark;
@@ -34,6 +35,8 @@ public class MapTabActivity extends MapActivity {
 	MapView m_mapView;
 	EventsItemizedOverlay m_eventsOverlay;
 	PositionOverlay m_positionOverlay;
+	
+	int m_oldRelevantPeriod = 0; 
 	
 	private LocationManager m_locationManager;
 	private LocationListener m_locationListener = new LocationListener() {
@@ -94,6 +97,18 @@ public class MapTabActivity extends MapActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+
+		
+/*		Settings settings = new Settings(this);
+		if (settings.getRelevantPeriod() != m_oldRelevantPeriod){
+			GDSUtil.log("Relevant period changed! OLD = " + 
+					m_oldRelevantPeriod + ", NEW = " +settings.getRelevantPeriod());
+			m_oldRelevantPeriod = settings.getRelevantPeriod();
+			
+			m_eventsOverlay.clear();
+			//m_eventsOverlay.removeOldMarks(m_oldRelevantPeriod);
+		}*/
+		
 		updatePosition();
 		m_eventsManager.requestEvents(this);
 	}
@@ -145,6 +160,7 @@ public class MapTabActivity extends MapActivity {
 							Log.v(GDSUtil.LOG, mark.toString());
 						}
 					}
+					
 					m_eventsOverlay.setEvents( marks);
 					m_mapView.invalidate();
 				}

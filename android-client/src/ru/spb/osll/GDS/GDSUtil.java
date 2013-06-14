@@ -32,7 +32,7 @@ public class GDSUtil {
 	public static final int TRACKING_INTERVAL = 1;
 	
 	private static final String DATE_FORMAT = "dd MM yyyy HH:mm:ss.SSS";
-	private static final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+	private  static final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 	private static final DateFormat dateUtcFormat;
 	public static final boolean WELCOME_ACTIVITY_DISABLED = false;
 	static {
@@ -40,6 +40,10 @@ public class GDSUtil {
 		dateUtcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 	}
 	
+	public static DateFormat getUtcDateFormat(){
+		return dateUtcFormat;
+	}
+		
 	public static String getTime(Date date) {
 		return dateFormat.format(date);
 	}
