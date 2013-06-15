@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World!</string>
-    <string name="app_name">GeoDoctorSearch</string>
+    <string name="app_name">DoctorSearch</string>
 
     <!-- WelcomeActivity -->
     <string name="welcome_activity_message">
@@ -10,7 +9,7 @@
 		<html>
 		<head></head>
 		<body style="text-align:justify;">
-        This programm is an instrument for people to get fast medical help in 
+        This programm is an instrument for people who need urgent medical help in 
         case of sudden disease exacerbation. All users are divided in two groups - Patients (people who might need help) 
         and Doctors (real doctors ready to help quickly). <br><br>Patients can send a SOS signal in case of emrgency. SOS signal will contain information 
         about user name, send time and coordinates. <br><br>Doctors can determine nearby people who needs urgent medical 

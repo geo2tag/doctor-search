@@ -32,6 +32,7 @@
                 <ImageButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
                     android:id="@+id/sos_button"
                     android:src="@drawable/sos128"
                     android:layout_gravity="center"/>
