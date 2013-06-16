@@ -33,7 +33,7 @@
  */
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="ru.spb.osll.GDS"
+    package="org.geo2tag.gds"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -57,20 +57,20 @@
         </activity>
         
         <activity
-            android:name="ru.spb.osll.GDS.LoginActivity"
+            android:name="org.geo2tag.gds.LoginActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="ru.spb.osll.GDS.preferences.SettingsActivity"
+            android:name="org.geo2tag.gds.preferences.SettingsActivity"
             android:configChanges="orientation|keyboardHidden" />
         <activity
-            android:name="ru.spb.osll.GDS.CreateAccountActivity"
+            android:name="org.geo2tag.gds.CreateAccountActivity"
             android:configChanges="orientation|keyboardHidden" />
         <activity
-            android:name="ru.spb.osll.GDS.MainActivity"
+            android:name="org.geo2tag.gds.MainActivity"
             android:configChanges="orientation|keyboardHidden" />
         <activity
-            android:name="ru.spb.osll.GDS.MapTabActivity"
+            android:name="org.geo2tag.gds.MapTabActivity"
             android:label="@string/map_tab_name" >
             <intent-filter>
                 <category android:name="android.intent.category.EMBED" />
@@ -80,17 +80,17 @@
         </activity>
 
         <service
-            android:name="ru.spb.osll.GDS.tracking.TrackingService"
+            android:name="org.geo2tag.gds.tracking.TrackingService"
             android:enabled="true"
             android:process=":tracking" >
         </service>
         <service
-            android:name="ru.spb.osll.GDS.LocationService"
+            android:name="org.geo2tag.gds.LocationService"
             android:enabled="true"
             android:process=":location_service" >
         </service>
         <service
-            android:name="ru.spb.osll.GDS.events.EventsService"
+            android:name="org.geo2tag.gds.events.EventsService"
             android:enabled="true"
             android:process=":events_service" >
         </service>
