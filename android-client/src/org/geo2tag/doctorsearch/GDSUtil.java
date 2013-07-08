@@ -19,7 +19,7 @@ public class GDSUtil {
 	public static final boolean DEBUG = true;
 	public static final String LOG = "GeoDoctorSearch";
 	public static final int ATTEMPTS = 5;
-	public static final boolean NOT_RECEIVE_OWN_EVENTS = false;
+	public static final boolean NOT_RECEIVE_OWN_EVENTS = true;
 	
 	public static final String AUTH_TOKEN = "auth_token";
 	public static final String LOGIN = "login";
@@ -35,6 +35,7 @@ public class GDSUtil {
 	private  static final DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
 	private static final DateFormat dateUtcFormat;
 	public static final boolean WELCOME_ACTIVITY_DISABLED = false;
+	public static final String DB_NAME = "doctor_search_db";
 	static {
 		dateUtcFormat = new SimpleDateFormat(DATE_FORMAT);
 		dateUtcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));

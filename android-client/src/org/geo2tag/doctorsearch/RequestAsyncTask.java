@@ -73,6 +73,8 @@ public class RequestAsyncTask extends AsyncTask<Void, Void, Void> {
         	
         	m_authToken = RequestSenderWrapper.login(m_login, m_password, m_serverUrl);
         	
+        	RequestSenderWrapper.setDB(m_authToken, GDSUtil.DB_NAME, m_serverUrl);
+        	
         	RequestSenderWrapper.addChannel(m_authToken, GDSUtil.EVENTS_CHANNEL, m_serverUrl);
         	RequestSenderWrapper.subscribeChannel(m_authToken, GDSUtil.EVENTS_CHANNEL, m_serverUrl);
         	
