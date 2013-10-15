@@ -66,6 +66,7 @@ public class Settings {
 	private static final String REMEMBER = "remember";
 	private static final String WELCOME_ACTIVITY_DISABLED = "welcome_activity_disabled";
 	
+	
 	private Context m_context;
 	
 	public Settings(Context context){

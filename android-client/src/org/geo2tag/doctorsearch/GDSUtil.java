@@ -36,6 +36,9 @@ public class GDSUtil {
 	private static final DateFormat dateUtcFormat;
 	public static final boolean WELCOME_ACTIVITY_DISABLED = false;
 	public static final String DB_NAME = "doctor_search_db";
+	public static final String REGISTER_URL = "http://194.85.173.9:20005/register.php?db_name="+DB_NAME;
+
+	
 	static {
 		dateUtcFormat = new SimpleDateFormat(DATE_FORMAT);
 		dateUtcFormat.setTimeZone(TimeZone.getTimeZone("UTC"));

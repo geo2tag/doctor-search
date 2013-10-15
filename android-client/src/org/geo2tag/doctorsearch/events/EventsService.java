@@ -105,9 +105,11 @@ public class EventsService extends Service {
 		m_eventsThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while (!Thread.currentThread().isInterrupted()){
+				int failCount = 0;
+				while (!Thread.currentThread().isInterrupted() && failCount != 5){
 					Location location = LocationService.getLocation(EventsService.this);
 					if (location == null) {
+						failCount++;
 						if (GDSUtil.DEBUG) {
 							Log.v(EventsManager.LOG, "can't get location");
 						}
@@ -121,6 +123,7 @@ public class EventsService extends Service {
 					
 					SystemClock.sleep(m_settings.getEventsPeriod() * 1000);
 				}
+				Log.v(EventsManager.LOG, "stop requesting location");
 			}
 		});
 		m_eventsThread.start();

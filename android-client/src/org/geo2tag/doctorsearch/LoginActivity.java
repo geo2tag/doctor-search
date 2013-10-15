@@ -37,6 +37,7 @@ import org.geo2tag.doctorsearch.preferences.Settings;
 import org.geo2tag.doctorsearch.preferences.SettingsActivity;
 import org.geo2tag.doctorsearch.R;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -131,7 +132,7 @@ public class LoginActivity extends BasicActivity {
         createAccountBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginActivity.this.createAccount();
+            	createAccount();
             }
         });
     }
@@ -190,8 +191,8 @@ public class LoginActivity extends BasicActivity {
     
 
 	private void createAccount() {
-        GDSUtil.log("creating account");
-        startActivity(new Intent(this, CreateAccountActivity.class));
+    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(GDSUtil.REGISTER_URL));
+		startActivity(browserIntent);
     }
 
     private void showSettings() {
