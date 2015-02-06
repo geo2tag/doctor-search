@@ -5,7 +5,7 @@
 
     <!-- WelcomeActivity -->
     <string name="welcome_activity_message">
-        <![CDATA[
+<![CDATA[
 		<html>
 		<head></head>
 		<body style="text-align:justify;">
@@ -13,14 +13,14 @@
         case of sudden disease exacerbation. All users are divided in two groups - Patients (people who might need help) 
         and Doctors (real doctors ready to help quickly). <br><br>Patients can send a SOS signal in case of emrgency. SOS signal will contain information 
         about user name, send time and coordinates. <br><br>Doctors can determine nearby people who needs urgent medical 
-        aid using interactive map, where closests SOS signals are displayed. 
+        aid using interactive map, where closests SOS signals are displayed.      
         </body>
 		</html>
 		]]>
-        </string>
+    </string>
     <string name="welcome_activity_next">Next</string>
     <string name="cancel_welcome_message">Do not show this screen next time</string>
-    
+
     <!-- Prefernces -->
     <string name="description_title">Description</string>
     <string name="description_summary">Set description</string>
@@ -35,10 +35,10 @@
     <string name="welcome_activity_disabled_title">Disable welcome screen</string>
     <string name="welcome_activity_disabled_summary">Do not show welcome screen on startup</string>
     <string name="events_period_title">Events update period</string>
-    <string name="events_period_summary">Set events update period(in seconds)</string>    
+    <string name="events_period_summary">Set events update period(in seconds)</string>
     <string name="relevant_period_title">Event max age</string>
-    <string name="relevant_period_summary">Set max age of loaded SOS events(in hours)</string>  
-    
+    <string name="relevant_period_summary">Set max age of loaded SOS events(in hours)</string>
+
     <!-- LoginActivity -->
     <string name="login">Login</string>
     <string name="email">Email</string>
@@ -78,5 +78,18 @@
     <string name="btnHide">Hide</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_welcome">WelcomeActivity</string>
+    <string name="title_activity_about">About</string>
+<string name="about_text">
+    <![CDATA[
+    		<html>
+		<head></head>
+		<body style="text-align:justify;">
+        Development of this application was partly supported by Karelia ENPI CBC programme grant KA432 “Journey planner service for disabled people 
+        (Social Navigator)”, co-funded by the European Union, the Russian Federation and the Republic of Finland. 
+    </body>
+		</html>
+		]]>
+</string>
+    <string name="menu_about">About</string>
 
 </resources>

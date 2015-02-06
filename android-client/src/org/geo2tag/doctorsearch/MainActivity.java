@@ -66,6 +66,8 @@ public class MainActivity extends TabActivity {
 	
 	public static final int SETTINGS_ID = Menu.FIRST;
 	public static final int SIGNOUT_ID = Menu.FIRST + 1;
+	public static final int ABOUT_ID = Menu.FIRST + 2;
+
 	
 	public static final int INTERVAL = 7;
 	
@@ -164,6 +166,8 @@ public class MainActivity extends TabActivity {
         boolean result = super.onCreateOptionsMenu(menu);
         menu.add(0, SETTINGS_ID, 0, R.string.menu_settings);
         menu.add(0, SIGNOUT_ID, 0, R.string.menu_sign_out);
+        menu.add(0, ABOUT_ID, 0, R.string.menu_about);
+
         return result;
     }
 	
@@ -175,11 +179,20 @@ public class MainActivity extends TabActivity {
             return true;
         case SIGNOUT_ID:
         	signOut();
+        case ABOUT_ID:
+        	showAbout();
+        	return true;
         }
        
         return super.onOptionsItemSelected(item);
     }
 	
+	private void showAbout() {
+		// TODO Auto-generated method stub
+		startActivity(new Intent(this, AboutActivity.class));
+
+	}
+
 	private void sos() {
 		m_progress = ProgressDialog.show(this, "SOS", "Sending SOS", true, true);
 		Thread thread = new Thread() {

@@ -50,6 +50,8 @@ import android.widget.Toast;
 public class LoginActivity extends BasicActivity {
 
     public static final int SETTINGS_ID = Menu.FIRST;
+	public static final int ABOUT_ID = Menu.FIRST + 2;
+
 
     private EditText m_loginEdit;
     private EditText m_passwordEdit;
@@ -93,6 +95,8 @@ public class LoginActivity extends BasicActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         boolean result = super.onCreateOptionsMenu(menu);
         menu.add(0, SETTINGS_ID, 0, R.string.menu_settings);
+        menu.add(0, ABOUT_ID, 0, R.string.menu_about);
+
         return result;
     }
 
@@ -102,10 +106,18 @@ public class LoginActivity extends BasicActivity {
             case SETTINGS_ID:
                 showSettings();
                 return true;
+            case ABOUT_ID:
+                showAbout();
+                return true;    
         }
 
         return super.onOptionsItemSelected(item);
     }
+	private void showAbout() {
+		// TODO Auto-generated method stub
+		startActivity(new Intent(this, AboutActivity.class));
+
+	}
 
     private void initViews() {
         if (m_settings.isRememberMe()) {

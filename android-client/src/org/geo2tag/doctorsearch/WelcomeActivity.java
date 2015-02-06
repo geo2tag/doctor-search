@@ -46,7 +46,7 @@ public class WelcomeActivity extends Activity {
             settings.setDefaultSettings();
         }
 		
-		m_buttonNext = (Button) findViewById(R.id.welcome_next);
+		m_buttonNext = (Button) findViewById(R.id.welcome_activity_next);
 		m_buttonNext.setOnClickListener(m_nextClickListener);
 		
 		m_checkBox = (CheckBox) findViewById(R.id.welcome_checkbox);
